@@ -1,0 +1,39 @@
+<nav class="admin-navbar">
+  <div class="nav-content">
+    <div class="brand" routerLink="/admin/gym" aria-label="Go to dashboard">
+      <img src="/assets/safe-fitness-logo.svg" alt="Safe Fitness" class="logo" />
+      <span class="app-name">Safe Fitness</span>
+    </div>
+
+    <button class="menu-toggle" aria-label="Toggle navigation" (click)="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-links" [class.open]="isMenuOpen">
+      <a routerLink="/admin" routerLinkActive="active" class="nav-link">
+        <span class="material-icons">home</span>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/admin/gym/view" routerLinkActive="active" class="nav-link">
+        <span class="material-icons">visibility</span>
+        <span>View Gym</span>
+      </a>
+      <a routerLink="/admin/gym" routerLinkActive="active" class="nav-cta">
+        <span class="material-icons">tune</span>
+        <span>Manage Gym</span>
+      </a>
+      <a routerLink="/admin/gym/edit" routerLinkActive="active" class="nav-link">
+        <span class="material-icons">edit</span>
+        <span>Edit Gym</span>
+      </a>
+      <a routerLink="/admin/gym/schedule" routerLinkActive="active" class="nav-link">
+        <span class="material-icons">calendar_month</span>
+        <span>Schedule</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+

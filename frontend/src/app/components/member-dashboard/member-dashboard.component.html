@@ -1,0 +1,115 @@
+<section class="view-wrapper">
+  <div class="page-container">
+    <header class="header">
+      <div class="title" style="display:flex;align-items:center;gap:10px">
+        <img src="/assets/safe-fitness-logo.svg" alt="Safe Fitness" style="width:28px;height:28px" />
+        <strong>Safe Fitness - Member Dashboard</strong>
+      </div>
+      <div class="header-actions">
+
+        <button 
+          class="browse-gyms-btn" 
+          *ngIf="showBrowseButton"
+          (click)="goToMyGym()"
+          title="View my subscribed gym">
+          <span class="material-icons">fitness_center</span>
+          My Gym
+        </button>
+        <button 
+          class="cancel-subscription-btn" 
+          *ngIf="activeSubscription"
+          (click)="cancelSubscription()"
+          title="Cancel your subscription">
+          <span class="material-icons">cancel</span>
+          Cancel Subscription
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="material-icons">logout</span>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="welcome-section">
+      <h2>Discover Gyms</h2>
+      <p>Find and rate gyms in your area</p>
+    </div>
+
+    <div class="cards-grid" *ngIf="gyms?.length; else loading">
+      <div class="gym-card" *ngFor="let g of gyms">
+        <div class="gym-card-header">
+          <h3>{{ g.name }} <span class="code" *ngIf="g.code">#{{ g.code }}</span></h3>
+          <div class="sub">{{ g.address || '—' }}</div>
+        </div>
+        
+        <div class="rating-section">
+          <app-star-rating 
+            [rating]="g.averageRating || 0" 
+            [readonly]="true" 
+            [showCount]="true" 
+            [count]="g.ratingCount || 0">
+          </app-star-rating>
+        </div>
+
+        <div class="mini-map" id="map-{{ g.id }}"></div>
+        
+        <div class="gallery" *ngIf="g.photos?.length" style="margin-top:10px">
+          <div class="grid-photos">
+            <img *ngFor="let ph of g.photos" [src]="photoUrl(ph?.url)" />
+          </div>
+        </div>
+        
+        <div class="actions" style="margin-top:12px">
+          <div class="rate-section">
+            <label>Rate this gym:</label>
+            <app-star-rating 
+              [rating]="getUserRating(g.id)" 
+              [readonly]="false" 
+              (ratingChange)="onRateGym(g.id, $event)">
+            </app-star-rating>
+          </div>
+          
+          <div class="subscription-section" style="margin-top:16px">
+            <div class="subscription-status" *ngIf="hasActiveSubscription(g.id)">
+              <span class="status-badge subscribed">
+                <span class="material-icons">check_circle</span>
+                Subscribed
+              </span>
+            </div>
+            <button 
+              class="subscribe-btn" 
+              *ngIf="!hasActiveSubscription(g.id)"
+              (click)="openSubscriptionModal(g)">
+              <span class="material-icons">credit_card</span>
+              Subscribe
+            </button>
+          </div>
+          
+          <div class="schedule-section" style="margin-top:12px">
+            <button 
+              class="schedule-btn" 
+              (click)="viewSchedule(g.id)">
+              <span class="material-icons">schedule</span>
+              View Schedule
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #loading>
+      <div class="empty" style="text-align:center;color:#6b7280;padding:40px">
+        <span class="material-icons">hourglass_empty</span>
+        <h3>Loading Gyms...</h3>
+        <p>Please wait while we fetch gym information.</p>
+      </div>
+    </ng-template>
+  </div>
+</section>
+
+<!-- Subscription Modal -->
+<app-subscription-modal 
+  [gym]="selectedGym"
+  [isOpen]="showSubscriptionModal"
+  (close)="closeSubscriptionModal()">
+</app-subscription-modal>

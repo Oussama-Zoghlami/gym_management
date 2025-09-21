@@ -1,0 +1,89 @@
+<div class="gym-view-container">
+  <div class="page-header">
+    <h1>Gym Information</h1>
+    <a routerLink="/coach" class="back-btn">
+      <span class="material-icons">arrow_back</span>
+      Back to Dashboard
+    </a>
+  </div>
+
+  <div class="content-wrapper" *ngIf="gym; else empty">
+    <!-- Gym Information Card -->
+    <div class="gym-info-card">
+      <div class="card-header">
+        <h2>{{ gym.name }}</h2>
+        <div class="address">{{ gym.address || '—' }}</div>
+        <div class="pricing-info" *ngIf="gym.monthlyPrice || gym.annualPrice">
+          <div class="price-item" *ngIf="gym.monthlyPrice">
+            <span class="price-label">Monthly:</span>
+            <span class="price-value">${{ gym.monthlyPrice }}</span>
+          </div>
+          <div class="price-item" *ngIf="gym.annualPrice">
+            <span class="price-label">Annual:</span>
+            <span class="price-value">${{ gym.annualPrice }}</span>
+          </div>
+        </div>
+        <div class="rating-section" *ngIf="gym.averageRating > 0 || gym.ratingCount > 0">
+          <app-star-rating 
+            [rating]="gym.averageRating || 0" 
+            [readonly]="true" 
+            [showCount]="true" 
+            [count]="gym.ratingCount || 0">
+          </app-star-rating>
+        </div>
+      </div>
+      
+      <p class="description" *ngIf="gym.description">{{ gym.description }}</p>
+      
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="material-icons">phone</span>
+          <div class="info-content">
+            <span class="label">Phone</span>
+            <div class="value">{{ gym.phone || '—' }}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="material-icons">email</span>
+          <div class="info-content">
+            <span class="label">Email</span>
+            <div class="value">{{ gym.email || '—' }}</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <span class="material-icons">place</span>
+          <div class="info-content">
+            <span class="label">Coordinates</span>
+            <div class="value">{{ gym.latitude ?? '—' }}, {{ gym.longitude ?? '—' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery" *ngIf="gym.photos?.length">
+        <h3>Gallery</h3>
+        <div class="photo-grid">
+          <img *ngFor="let ph of gym.photos" [src]="photoUrl(ph?.url)" loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Card -->
+    <div class="map-card">
+      <div class="card-header">
+        <h3>Location</h3>
+      </div>
+      <div class="map-container" #mapContainer></div>
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty-state">
+      <span class="material-icons">fitness_center</span>
+      <h2>No Gym Assigned</h2>
+      <p>Your admin has not assigned a gym to you yet. Please contact them for assistance.</p>
+      <a routerLink="/coach" class="btn-primary">Back to Dashboard</a>
+    </div>
+  </ng-template>
+</div>
+
+

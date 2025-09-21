@@ -1,0 +1,86 @@
+<div class="subscription-calendar">
+  <div class="calendar-header">
+    <h2>Subscription Timeline</h2>
+    <div class="calendar-controls">
+      <button class="nav-btn" (click)="previousMonth()">
+        <span class="material-icons">chevron_left</span>
+      </button>
+      <h3 class="month-year">{{ getMonthYearString() }}</h3>
+      <button class="nav-btn" (click)="nextMonth()">
+        <span class="material-icons">chevron_right</span>
+      </button>
+      <button class="today-btn" (click)="goToToday()">Today</button>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <div class="loading-spinner"></div>
+    <p>Loading subscription history...</p>
+  </div>
+
+  <div class="calendar-container" *ngIf="!isLoading">
+    <!-- Week day headers -->
+    <div class="weekdays">
+      <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
+    </div>
+
+    <!-- Calendar grid -->
+    <div class="calendar-grid">
+      <!-- Empty cells for days before the first day of the month -->
+      <div class="calendar-day empty" *ngFor="let empty of Array(getFirstDayOfMonth()).fill(0)"></div>
+      
+      <!-- Days of the month -->
+      <div 
+        class="calendar-day" 
+        [class.today]="isToday(day)"
+        *ngFor="let day of getDaysInMonth()"
+      >
+        <div class="day-number">{{ day }}</div>
+        
+        <!-- Events for this day -->
+        <div class="events-container">
+          <div 
+            class="event-bar"
+            *ngFor="let event of getEventsForDay(day)"
+            [style.background-color]="event.color"
+            [class.event-start]="isEventStart(day, event)"
+            [class.event-end]="isEventEnd(day, event)"
+            [title]="getEventTooltip(event)"
+          >
+            <span class="event-title" *ngIf="isEventStart(day, event)">
+              {{ event.gymName }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend" *ngIf="!isLoading && calendarEvents.length > 0">
+    <h4>Legend</h4>
+    <div class="legend-items">
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #4CAF50;"></div>
+        <span>Active Subscription</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #f44336;"></div>
+        <span>Canceled Subscription</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #ff9800;"></div>
+        <span>Expired Subscription</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- No subscriptions message -->
+  <div class="no-subscriptions" *ngIf="!isLoading && calendarEvents.length === 0">
+    <div class="no-subscriptions-content">
+      <span class="material-icons">event_busy</span>
+      <h3>No Subscription History</h3>
+      <p>You don't have any subscription history to display on the calendar.</p>
+    </div>
+  </div>
+</div>

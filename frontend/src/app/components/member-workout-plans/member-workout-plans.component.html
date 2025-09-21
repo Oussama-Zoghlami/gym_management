@@ -1,0 +1,223 @@
+<div class="workout-plans-container">
+  <div class="section-header">
+    <h2>
+      <span class="material-icons">fitness_center</span>
+      My Workout Plans
+    </h2>
+    <p class="section-description">View and track your assigned workout plans</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <span class="material-icons">refresh</span>
+    </div>
+    <p>Loading your workout plans...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <div class="error-message">
+      <span class="material-icons">error</span>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadWorkoutAssignments()">
+        <span class="material-icons">refresh</span>
+        Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- Workout Plans Grid -->
+  <div *ngIf="!isLoading && !error && workoutAssignments.length > 0" class="workout-plans-grid">
+    <div class="workout-plan-card" *ngFor="let assignment of workoutAssignments" 
+         [ngClass]="'status-' + assignment.status.toLowerCase()">
+      <div class="card-header">
+        <h3>{{ assignment.workoutPlan.title }}</h3>
+        <div class="card-badges">
+          <span class="difficulty-badge" [ngClass]="getDifficultyBadgeClass(assignment.workoutPlan.difficultyLevel)">
+            {{ assignment.workoutPlan.difficultyLevel }}
+          </span>
+          <span class="status-badge" [ngClass]="getStatusBadgeClass(assignment.status)">
+            {{ assignment.status }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <p class="description">{{ assignment.workoutPlan.description }}</p>
+        
+        <div class="workout-stats">
+          <div class="stat-item">
+            <span class="stat-icon">
+              <span class="material-icons">timer</span>
+            </span>
+            <span class="stat-value">{{ formatDuration(assignment.workoutPlan.duration) }}</span>
+            <span class="stat-label">Duration</span>
+          </div>
+          
+          <div class="stat-item">
+            <span class="stat-icon">
+              <span class="material-icons">fitness_center</span>
+            </span>
+            <span class="stat-value">{{ getTotalExercises(assignment) }}</span>
+            <span class="stat-label">Exercises</span>
+          </div>
+          
+          <div class="stat-item">
+            <span class="stat-icon">
+              <span class="material-icons">repeat</span>
+            </span>
+            <span class="stat-value">{{ getTotalSets(assignment) }}</span>
+            <span class="stat-label">Sets</span>
+          </div>
+        </div>
+
+        <div class="exercises-preview">
+          <h4>Exercises Preview</h4>
+          <ul>
+            <li *ngFor="let exercise of assignment.workoutPlan.exercises.slice(0, 3)">
+              <span class="exercise-name">{{ exercise.name }}</span>
+              <span class="exercise-details">{{ exercise.sets }}x{{ exercise.reps }}</span>
+            </li>
+            <li *ngIf="assignment.workoutPlan.exercises.length > 3" class="more-exercises">
+              +{{ assignment.workoutPlan.exercises.length - 3 }} more exercises
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-meta">
+          <div class="meta-row">
+            <span class="meta-label">Coach:</span>
+            <span class="meta-value">{{ assignment.coachName }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Assigned:</span>
+            <span class="meta-value">{{ assignment.assignedAt | date:'short' }}</span>
+          </div>
+          <div class="meta-row" *ngIf="assignment.completedAt">
+            <span class="meta-label">Completed:</span>
+            <span class="meta-value">{{ assignment.completedAt | date:'short' }}</span>
+          </div>
+        </div>
+
+        <div class="coach-notes" *ngIf="assignment.notes">
+          <h5>Coach Notes:</h5>
+          <p>{{ assignment.notes }}</p>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-view" (click)="viewWorkoutDetails(assignment)">
+          <span class="material-icons">visibility</span>
+          View Details
+        </button>
+        <button *ngIf="assignment.status === 'ASSIGNED' || assignment.status === 'IN_PROGRESS'" 
+                class="btn-start" 
+                (click)="viewWorkoutDetails(assignment)">
+          <span class="material-icons">play_arrow</span>
+          Start Workout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !error && workoutAssignments.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <span class="material-icons">fitness_center</span>
+    </div>
+    <h3>No Workout Plans Assigned</h3>
+    <p>Your coach hasn't assigned any workout plans yet. Check back later or contact your coach.</p>
+  </div>
+
+  <!-- Workout Details Modal -->
+  <div *ngIf="showWorkoutDetails && selectedWorkout" class="workout-details-modal">
+    <div class="modal-overlay" (click)="closeWorkoutDetails()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ selectedWorkout.workoutPlan.title }}</h3>
+        <button class="close-btn" (click)="closeWorkoutDetails()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="workout-info">
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Duration:</span>
+              <span class="info-value">{{ formatDuration(selectedWorkout.workoutPlan.duration) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Difficulty:</span>
+              <span class="info-value badge" [ngClass]="getDifficultyBadgeClass(selectedWorkout.workoutPlan.difficultyLevel)">
+                {{ selectedWorkout.workoutPlan.difficultyLevel }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Status:</span>
+              <span class="info-value badge" [ngClass]="getStatusBadgeClass(selectedWorkout.status)">
+                {{ selectedWorkout.status }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Coach:</span>
+              <span class="info-value">{{ selectedWorkout.coachName }}</span>
+            </div>
+          </div>
+
+          <div class="workout-description" *ngIf="selectedWorkout.workoutPlan.description">
+            <h4>Description</h4>
+            <p>{{ selectedWorkout.workoutPlan.description }}</p>
+          </div>
+
+          <div class="coach-notes" *ngIf="selectedWorkout.notes">
+            <h4>Coach Notes</h4>
+            <p>{{ selectedWorkout.notes }}</p>
+          </div>
+        </div>
+
+        <div class="exercises-section">
+          <h4>Exercises ({{ selectedWorkout.workoutPlan.exercises.length }})</h4>
+          <div class="exercises-list">
+            <div class="exercise-card" *ngFor="let exercise of selectedWorkout.workoutPlan.exercises; let i = index">
+              <div class="exercise-header">
+                <h5>{{ i + 1 }}. {{ exercise.name }}</h5>
+                <div class="exercise-badges">
+                  <span class="sets-reps">{{ exercise.sets }} sets × {{ exercise.reps }} reps</span>
+                  <span class="duration" *ngIf="exercise.duration">{{ exercise.duration }}s</span>
+                </div>
+              </div>
+
+              <div class="exercise-details">
+                <p *ngIf="exercise.description" class="exercise-description">{{ exercise.description }}</p>
+                
+                <div class="exercise-meta">
+                  <div class="meta-item" *ngIf="exercise.restTime">
+                    <span class="material-icons">pause</span>
+                    <span>Rest: {{ exercise.restTime }}</span>
+                  </div>
+                </div>
+
+                <div class="exercise-instructions" *ngIf="exercise.instructions">
+                  <h6>Instructions:</h6>
+                  <p>{{ exercise.instructions }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeWorkoutDetails()">Close</button>
+        <button *ngIf="selectedWorkout.status === 'ASSIGNED' || selectedWorkout.status === 'IN_PROGRESS'" 
+                class="btn-complete" 
+                (click)="completeWorkout(selectedWorkout.id)">
+          <span class="material-icons">check_circle</span>
+          Mark as Completed
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <img src="assets/safe-fitness-logo.svg" alt="Safe Fitness" class="logo">
+      <h1>Safe Fitness</h1>
+    </div>
+    
+    <div class="header-actions">
+      <a class="nav-btn" routerLink="/coach/gym/view">
+        <span class="material-icons">fitness_center</span>
+        View Gym
+      </a>
+      <a class="nav-btn" routerLink="/coach/schedule">
+        <span class="material-icons">schedule</span>
+        View Schedule
+      </a>
+      <a class="nav-btn" routerLink="/coach/members">
+        <span class="material-icons">group</span>
+        View Members
+      </a>
+      <button class="nav-btn" (click)="toggleMessaging()">
+        <span class="material-icons">message</span>
+        Messages
+        <span class="message-badge" *ngIf="unreadCount > 0">{{unreadCount}}</span>
+      </button>
+      <button class="logout-btn" (click)="logout()">
+        <span class="material-icons">logout</span>
+        Logout
+      </button>
+    </div>
+  </header>
+  
+  <main class="dashboard-content">
+    <div *ngIf="!showMessaging">
+      <h2>Welcome, Coach!</h2>
+      <div class="gym-info" *ngIf="gym">
+        <div class="info-card">
+          <h3>Your Assigned Gym</h3>
+          <p><strong>{{ gym.name }}</strong></p>
+          <p>{{ gym.address || 'No address provided' }}</p>
+        </div>
+      </div>
+
+      <!-- Workout Plans Section -->
+      <div *ngIf="gym" class="workout-plans-section">
+        <app-coach-workout-plans></app-coach-workout-plans>
+      </div>
+      <div class="no-gym" *ngIf="!gym">
+        <div class="info-card">
+          <h3>No Gym Assigned</h3>
+          <p>Please contact your admin to get assigned to a gym.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messaging Component -->
+    <div *ngIf="showMessaging" class="messaging-section">
+      <div class="messaging-header">
+        <button class="back-btn" (click)="toggleMessaging()">
+          <span class="material-icons">arrow_back</span>
+          Back to Dashboard
+        </button>
+      </div>
+      <app-coach-messaging></app-coach-messaging>
+    </div>
+  </main>
+</div>
+
+

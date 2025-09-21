@@ -1,0 +1,132 @@
+.cancel-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  padding: 20px;
+}
+
+.cancel-card {
+  background: white;
+  border-radius: 16px;
+  padding: 48px;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.cancel-icon {
+  margin-bottom: 24px;
+  
+  .material-icons {
+    font-size: 72px;
+    color: #ef4444;
+  }
+}
+
+h1 {
+  margin: 0 0 16px 0;
+  color: #1f2937;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.cancel-message {
+  color: #4b5563;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 32px 0;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 0 0 48px 0;
+  
+  button {
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    
+    .material-icons {
+      font-size: 20px;
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+  
+  .btn-secondary {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    
+    &:hover {
+      background: #e5e7eb;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    
+    &:hover {
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+  }
+}
+
+.help-info {
+  text-align: left;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 24px;
+  
+  h3 {
+    margin: 0 0 12px 0;
+    color: #1f2937;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 768px) {
+  .cancel-card {
+    padding: 32px 24px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  .cancel-message {
+    font-size: 1rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}

@@ -1,0 +1,113 @@
+<div class="coach-members-container">
+  <div class="section-header">
+    <div class="header-content">
+      <h2>
+        <span class="material-icons">group</span>
+        Gym Members
+      </h2>
+      <p class="section-description">View all members in your gym</p>
+    </div>
+    <a routerLink="/coach" class="back-btn">
+      <span class="material-icons">arrow_back</span>
+      Back to Dashboard
+    </a>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <span class="material-icons">refresh</span>
+    </div>
+    <p>Loading gym members...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <div class="error-message">
+      <span class="material-icons">error</span>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadGymMembers()">
+        <span class="material-icons">refresh</span>
+        Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !error && gymMembers.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <span class="material-icons">group_off</span>
+    </div>
+    <h3>No Members Yet</h3>
+    <p>No members have subscribed to your gym yet.</p>
+  </div>
+
+  <!-- Members List -->
+  <div *ngIf="!isLoading && !error && gymMembers.length > 0" class="members-grid">
+    <div class="member-card" *ngFor="let member of gymMembers" 
+         [attr.data-gym-code]="member.gymCode">
+      <div class="member-header">
+        <div class="member-avatar">
+          <span class="material-icons">person</span>
+        </div>
+        <div class="member-info">
+          <h3 class="member-name">{{ member.firstname }} {{ member.lastname }}</h3>
+          <p class="member-email">{{ member.email }}</p>
+        </div>
+        <div class="gym-badge" [ngClass]="getGymBadgeClass(member.gymCode)">
+          {{ member.gymCode }}
+        </div>
+      </div>
+      
+      <div class="member-details">
+        <div class="detail-item" *ngIf="member.phone">
+          <span class="material-icons">phone</span>
+          <span>{{ member.phone }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="material-icons">fitness_center</span>
+          <span>{{ member.gymName }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="material-icons">calendar_today</span>
+          <span>Joined {{ formatDate(member.subscriptionDate) }}</span>
+        </div>
+      </div>
+      
+      <div class="member-actions">
+        <button class="action-btn contact-btn" title="Contact Member" (click)="openEmailModal(member)">
+          <span class="material-icons">email</span>
+        </button>
+        <button class="action-btn view-btn" title="View Details" (click)="openMemberDetailsModal(member)">
+          <span class="material-icons">visibility</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Summary -->
+  <div *ngIf="!isLoading && !error && gymMembers.length > 0" class="stats-summary">
+    <div class="stat-item">
+      <span class="stat-number">{{ gymMembers.length }}</span>
+      <span class="stat-label">Total Members</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{{ getRecentMembers() }}</span>
+      <span class="stat-label">This Month</span>
+    </div>
+  </div>
+
+  <!-- Email Modal -->
+  <app-email-modal 
+    [isOpen]="showEmailModal" 
+    [member]="selectedMember" 
+    (close)="closeEmailModal()">
+  </app-email-modal>
+
+  <!-- Member Details Modal -->
+  <app-member-details-modal 
+    [isOpen]="showMemberDetailsModal" 
+    [member]="selectedMemberForDetails"
+    (close)="closeMemberDetailsModal()">
+  </app-member-details-modal>
+</div>

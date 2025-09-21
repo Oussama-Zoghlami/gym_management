@@ -1,0 +1,298 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="assets/safe-fitness-logo.svg" alt="Safe Fitness" class="logo">
+        <h1>Safe Fitness</h1>
+      </div>
+      
+      <nav class="nav-menu">
+        <a routerLink="/superadmin/gyms" class="nav-item">
+          <span class="material-icons">fitness_center</span>
+          All Gyms
+        </a>
+        <a routerLink="/superadmin/users" class="nav-item">
+          <span class="material-icons">people</span>
+          All Users
+        </a>
+        <a routerLink="/superadmin/statistics" class="nav-item">
+          <span class="material-icons">analytics</span>
+          Statistics
+        </a>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Notifications -->
+        <div class="notification-wrapper">
+          <button class="notification-btn" (click)="toggleNotifications()">
+            <span class="material-icons">notifications</span>
+            <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+          </button>
+          
+          <!-- Notification Dropdown -->
+          <div class="notification-dropdown" *ngIf="showNotifications">
+            <div class="dropdown-header">
+              <h3>Notifications</h3>
+              <button (click)="clearNotifications()" class="clear-btn">Clear All</button>
+            </div>
+            <div class="notification-list">
+              <div *ngFor="let notification of notifications" 
+                   class="notification-item"
+                   [class.unread]="!notification.read">
+                <span class="notification-icon" [class]="'type-' + notification.type">
+                  <span class="material-icons">
+                    {{ notification.type === 'success' ? 'check_circle' : 
+                       notification.type === 'error' ? 'error' : 
+                       notification.type === 'warning' ? 'warning' : 'info' }}
+                  </span>
+                </span>
+                <div class="notification-content">
+                  <p>{{ notification.message }}</p>
+                  <span class="notification-time">{{ getTimeAgo(notification.timestamp) }}</span>
+                </div>
+              </div>
+              <div *ngIf="notifications.length === 0" class="no-notifications">
+                No notifications
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <button class="logout-btn" (click)="logout()">
+          <span class="material-icons">logout</span>
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <h2>Welcome back, SuperAdmin!</h2>
+      <p>Manage user registrations and gym operations from here.</p>
+    </div>
+
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon pending">
+          <span class="material-icons">hourglass_empty</span>
+        </div>
+        <div class="stat-content">
+          <h3>{{ stats.totalPending }}</h3>
+          <p>Pending Approvals</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon admin">
+          <span class="material-icons">admin_panel_settings</span>
+        </div>
+        <div class="stat-content">
+          <h3>{{ stats.pendingAdmins }}</h3>
+          <p>Pending Admins</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon member">
+          <span class="material-icons">person</span>
+        </div>
+        <div class="stat-content">
+          <h3>{{ stats.pendingMembers }}</h3>
+          <p>Pending Members</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon approved">
+          <span class="material-icons">check_circle</span>
+        </div>
+        <div class="stat-content">
+          <h3>{{ stats.approvedToday }}</h3>
+          <p>Approved Today</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Users Section -->
+    <div class="pending-users-section">
+      <div class="section-header">
+        <h2>
+          <span class="material-icons">pending_actions</span>
+          Pending User Registrations
+        </h2>
+        <div class="filter-bar">
+          <button class="refresh-btn" (click)="loadPendingUsers()">
+            <span class="material-icons">refresh</span>
+            Refresh
+          </button>
+          <div class="filter-group">
+            <button class="filter-btn" (click)="setActiveList('pending_all')" [class.active]="activeList==='pending_all'">
+              All
+            </button>
+            <button class="filter-btn" (click)="setActiveList('pending_admins')" [class.active]="activeList==='pending_admins'">
+              Pending Admins ({{ stats.pendingAdmins }})
+            </button>
+            <button class="filter-btn" (click)="setActiveList('pending_members')" [class.active]="activeList==='pending_members'">
+              Pending Members ({{ stats.pendingMembers }})
+            </button>
+            <button class="filter-btn" (click)="setActiveList('approved_today')" [class.active]="activeList==='approved_today'">
+              Approved Today ({{ stats.approvedToday }})
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading pending users...</p>
+      </div>
+
+      <!-- Users Grid / Approved Today -->
+      <div class="users-grid" *ngIf="!isLoading && activeList !== 'approved_today'">
+        <div *ngFor="let user of filteredPendingUsers" 
+             class="user-card"
+             [class.admin-card]="user.cin">
+          <div class="user-header">
+            <div class="user-type-badge" [class]="getUserTypeClass(user)">
+              <span class="material-icons">{{ getUserTypeIcon(user) }}</span>
+              {{ user.cin ? 'ADMIN' : 'MEMBER' }}
+            </div>
+            <span class="registration-time">{{ getTimeAgo(user.registrationDate) }}</span>
+          </div>
+
+          <div class="user-info">
+            <div class="user-avatar">
+              <span class="material-icons">account_circle</span>
+            </div>
+            <div class="user-details">
+              <h3>{{ user.firstname }} {{ user.lastname }}</h3>
+              <p class="user-email">
+                <span class="material-icons">email</span>
+                {{ user.email }}
+              </p>
+              <p class="user-cin" *ngIf="user.cin">
+                <span class="material-icons">badge</span>
+                CIN: {{ user.cin }}
+              </p>
+            </div>
+          </div>
+
+          <div class="user-actions">
+            <button class="btn-view" (click)="viewUserDetails(user)">
+              <span class="material-icons">visibility</span>
+              View Details
+            </button>
+            <button class="btn-approve" (click)="approveUser(user)">
+              <span class="material-icons">check</span>
+              Approve
+            </button>
+            <button class="btn-reject" (click)="rejectUser(user)">
+              <span class="material-icons">close</span>
+              Reject
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="pendingUsers.length === 0" class="empty-state">
+          <span class="material-icons">inbox</span>
+          <h3>No Pending Registrations</h3>
+          <p>All user registrations have been processed.</p>
+        </div>
+      </div>
+
+      <!-- Approved Today List -->
+      <div class="users-grid" *ngIf="!isLoading && activeList === 'approved_today'">
+        <div *ngFor="let user of approvedUsersToday" class="user-card">
+          <div class="user-header">
+            <div class="user-type-badge" [class]="user.cin ? 'admin' : 'member'">
+              <span class="material-icons">{{ user.cin ? 'admin_panel_settings' : 'person' }}</span>
+              {{ user.cin ? 'ADMIN' : 'MEMBER' }}
+            </div>
+            <span class="registration-time">{{ getTimeAgo(user.registrationDate) }}</span>
+          </div>
+
+          <div class="user-info">
+            <div class="user-avatar">
+              <span class="material-icons">account_circle</span>
+            </div>
+            <div class="user-details">
+              <h3>{{ user.firstname }} {{ user.lastname }}</h3>
+              <p class="user-email">
+                <span class="material-icons">email</span>
+                {{ user.email }}
+              </p>
+              <p class="user-cin" *ngIf="user.cin">
+                <span class="material-icons">badge</span>
+                CIN: {{ user.cin }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="approvedUsersToday.length === 0" class="empty-state">
+          <span class="material-icons">inbox</span>
+          <h3>No Approvals Today</h3>
+          <p>Approvals you make today will appear here.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- User Details Modal -->
+  <div class="modal-overlay" *ngIf="showUserDetails" (click)="closeUserDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>User Details</h2>
+        <button class="close-btn" (click)="closeUserDetails()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedUser">
+        <div class="detail-group">
+          <label>Full Name:</label>
+          <p>{{ selectedUser.firstname }} {{ selectedUser.lastname }}</p>
+        </div>
+        
+        <div class="detail-group">
+          <label>Email:</label>
+          <p>{{ selectedUser.email }}</p>
+        </div>
+        
+        <div class="detail-group">
+          <label>Role:</label>
+          <p>{{ selectedUser.role }}</p>
+        </div>
+        
+        <div class="detail-group" *ngIf="selectedUser.cin">
+          <label>CIN (National ID):</label>
+          <p>{{ selectedUser.cin }}</p>
+        </div>
+        
+        <div class="detail-group">
+          <label>Registration Date:</label>
+          <p>{{ selectedUser.registrationDate | date:'medium' }}</p>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-success" (click)="approveUser(selectedUser!)">
+          <span class="material-icons">check_circle</span>
+          Approve User
+        </button>
+        <button class="btn btn-danger" (click)="rejectUser(selectedUser!)">
+          <span class="material-icons">cancel</span>
+          Reject User
+        </button>
+      </div>
+    </div>
+  </div>

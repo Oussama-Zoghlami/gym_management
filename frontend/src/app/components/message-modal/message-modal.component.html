@@ -1,0 +1,49 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Send Message</h3>
+      <button class="close-btn" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="member-info" *ngIf="member">
+        <div class="member-avatar">
+          <span class="material-icons">person</span>
+        </div>
+        <div class="member-details">
+          <h4>{{ member.firstname }} {{ member.lastname }}</h4>
+          <p>{{ member.email }}</p>
+        </div>
+      </div>
+      
+      <div class="message-input">
+        <label for="message">Your Message:</label>
+        <textarea 
+          id="message"
+          [(ngModel)]="messageContent"
+          placeholder="Type your message here..."
+          (keypress)="onKeyPress($event)"
+          [disabled]="isSending"
+          rows="4">
+        </textarea>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="onClose()" [disabled]="isSending">
+        Cancel
+      </button>
+      <button 
+        class="send-btn" 
+        (click)="onSendMessage()" 
+        [disabled]="!messageContent.trim() || isSending">
+        <span class="material-icons" *ngIf="!isSending">send</span>
+        <span class="material-icons" *ngIf="isSending">hourglass_empty</span>
+        {{ isSending ? 'Sending...' : 'Send' }}
+      </button>
+    </div>
+  </div>
+</div>
+

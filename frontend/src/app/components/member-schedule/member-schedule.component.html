@@ -1,0 +1,67 @@
+<section class="view-wrapper">
+  <div class="page-container">
+    <header class="header">
+      <div class="title" style="display:flex;align-items:center;gap:10px">
+        <img src="/assets/safe-fitness-logo.svg" alt="Safe Fitness" style="width:28px;height:28px" />
+        <strong>Safe Fitness - Gym Schedule</strong>
+      </div>
+      <div class="header-actions">
+        <button class="back-btn" (click)="goBack()">
+          <span class="material-icons">arrow_back</span>
+          Back to My Gym
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="material-icons">logout</span>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="gym-info" *ngIf="gym">
+      <h2>{{ gym.name }} Schedule</h2>
+      <p *ngIf="gym.address">{{ gym.address }}</p>
+    </div>
+
+    <div class="loading-section" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <h3>Loading schedule...</h3>
+    </div>
+
+    <div class="error-section" *ngIf="error && !isLoading">
+      <div class="error-message">
+        <span class="material-icons">error</span>
+        <h3>{{ error }}</h3>
+        <button class="btn-primary" (click)="loadGymSchedule()">
+          <span class="material-icons">refresh</span>
+          Try Again
+        </button>
+      </div>
+    </div>
+
+    <div class="schedule-container" *ngIf="!isLoading && !error">
+      <div class="schedule-grid">
+        <div class="day-column" *ngFor="let day of getDaysOfWeek()">
+          <div class="day-header">
+            <h3>{{ getDayName(day) }}</h3>
+          </div>
+          <div class="day-schedules">
+            <div class="schedule-item" *ngFor="let schedule of getScheduleByDay(day)">
+              <div class="schedule-time">
+                <span class="material-icons">schedule</span>
+                {{ formatTime(schedule.openTime) }} - {{ formatTime(schedule.closeTime) }}
+              </div>
+              <div class="schedule-activity">
+                <h4>Gym Hours</h4>
+                <p *ngIf="schedule.note">{{ schedule.note }}</p>
+              </div>
+            </div>
+            <div class="no-schedule" *ngIf="getScheduleByDay(day).length === 0">
+              <span class="material-icons">event_busy</span>
+              <p>No activities scheduled</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

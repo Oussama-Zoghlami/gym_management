@@ -1,0 +1,363 @@
+<div class="statistics-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>
+          <span class="material-icons">analytics</span>
+          Gym Statistics Dashboard
+        </h1>
+        <p>Comprehensive analytics and insights for all gyms</p>
+      </div>
+      <div class="header-actions">
+        <button class="return-btn" (click)="goBack()">
+          <span class="material-icons">arrow_back</span>
+          Back to Dashboard
+        </button>
+        <button class="refresh-btn" (click)="refreshData()" [disabled]="isLoading">
+          <span class="material-icons">refresh</span>
+          Refresh Data
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="loading-spinner">
+      <span class="material-icons">refresh</span>
+    </div>
+    <p>Loading statistics...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content" *ngIf="!isLoading">
+    
+    <!-- Overview Tab -->
+    <div class="overview-section" *ngIf="activeTab === 'overview'">
+      <div class="stats-grid" *ngIf="overallStats">
+        <!-- Total Gyms Card -->
+        <div class="stat-card primary">
+          <div class="card-icon">
+            <span class="material-icons">fitness_center</span>
+          </div>
+          <div class="card-content">
+            <h3>{{ statisticsService.formatNumber(overallStats.totalGyms) }}</h3>
+            <p>Total Gyms</p>
+            <div class="card-footer">
+              <span class="trend positive">+{{ overallStats.newGymsLast30Days }} this month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Users Card -->
+        <div class="stat-card secondary">
+          <div class="card-icon">
+            <span class="material-icons">people</span>
+          </div>
+          <div class="card-content">
+            <h3>{{ statisticsService.formatNumber(overallStats.totalUsers) }}</h3>
+            <p>Total Users</p>
+            <div class="card-footer">
+              <span class="trend positive">+{{ overallStats.newUsersLast30Days }} this month</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Subscriptions Card -->
+        <div class="stat-card success">
+          <div class="card-icon">
+            <span class="material-icons">subscriptions</span>
+          </div>
+          <div class="card-content">
+            <h3>{{ statisticsService.formatNumber(overallStats.activeSubscriptions) }}</h3>
+            <p>Active Subscriptions</p>
+            <div class="card-footer">
+              <span class="trend neutral">{{ statisticsService.formatPercentage((overallStats.activeSubscriptions / overallStats.totalUsers) * 100) }} of users</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Revenue Card -->
+        <div class="stat-card warning">
+          <div class="card-icon">
+            <span class="material-icons">attach_money</span>
+          </div>
+          <div class="card-content">
+            <h3>{{ statisticsService.formatCurrency(overallStats.totalRevenue) }}</h3>
+            <p>Total Revenue</p>
+            <div class="card-footer">
+              <span class="trend positive">Monthly recurring</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coaches Card -->
+        <div class="stat-card info">
+          <div class="card-icon">
+            <span class="material-icons">sports_gymnastics</span>
+          </div>
+          <div class="card-content">
+            <h3>{{ statisticsService.formatNumber(overallStats.totalCoaches) }}</h3>
+            <p>Total Coaches</p>
+            <div class="card-footer">
+              <span class="trend neutral">Across all gyms</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workout Plans Card -->
+        <div class="stat-card purple">
+          <div class="card-icon">
+            <span class="material-icons">assignment</span>
+          </div>
+          <div class="card-content">
+            <h3>{{ statisticsService.formatNumber(overallStats.totalWorkoutPlans) }}</h3>
+            <p>Workout Plans</p>
+            <div class="card-footer">
+              <span class="trend positive">{{ statisticsService.formatNumber(overallStats.completedWorkouts) }} completed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-container" *ngIf="activeTab !== 'overview'">
+      <div class="tabs-nav">
+        <button class="tab-btn" 
+                [class.active]="activeTab === 'subscriptions'"
+                (click)="setActiveTab('subscriptions')">
+          <span class="material-icons">people</span>
+          Most Subscribed
+        </button>
+        <button class="tab-btn" 
+                [class.active]="activeTab === 'revenue'"
+                (click)="setActiveTab('revenue')">
+          <span class="material-icons">attach_money</span>
+          Highest Revenue
+        </button>
+        <button class="tab-btn" 
+                [class.active]="activeTab === 'coaches'"
+                (click)="setActiveTab('coaches')">
+          <span class="material-icons">fitness_center</span>
+          Most Coaches
+        </button>
+        <button class="tab-btn" 
+                [class.active]="activeTab === 'workouts'"
+                (click)="setActiveTab('workouts')">
+          <span class="material-icons">sports_gymnastics</span>
+          Best Workouts
+        </button>
+        <button class="tab-btn" 
+                [class.active]="activeTab === 'rating'"
+                (click)="setActiveTab('rating')">
+          <span class="material-icons">star</span>
+          Top Rated
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <div class="tab-header">
+          <h2>
+            <span class="material-icons">{{ getTabIcon() }}</span>
+            {{ getTabTitle() }}
+          </h2>
+        </div>
+
+        <div class="gyms-list">
+          <div class="gym-card" *ngFor="let gym of getCurrentTopGyms(); let i = index">
+            <div class="gym-rank">
+              <span class="rank-number">{{ i + 1 }}</span>
+            </div>
+            <div class="gym-info">
+              <h3>{{ gym.gymName }}</h3>
+              <p class="gym-code">Code: {{ gym.gymCode }}</p>
+              <div class="gym-stats">
+                <div class="stat-item">
+                  <span class="material-icons">people</span>
+                  <span>{{ statisticsService.formatNumber(gym.subscriptionCount) }} subscribers</span>
+                </div>
+                <div class="stat-item">
+                  <span class="material-icons">attach_money</span>
+                  <span>{{ statisticsService.formatCurrency(gym.revenue) }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="material-icons">sports_gymnastics</span>
+                  <span>{{ statisticsService.formatNumber(gym.coachCount) }} coaches</span>
+                </div>
+                <div class="stat-item">
+                  <span class="material-icons">assignment</span>
+                  <span>{{ statisticsService.formatNumber(gym.workoutPlanCount) }} plans</span>
+                </div>
+                <div class="stat-item" *ngIf="gym.averageRating && gym.averageRating > 0">
+                  <span class="material-icons">star</span>
+                  <span>{{ gym.averageRating.toFixed(1) }}/5.0</span>
+                </div>
+              </div>
+            </div>
+            <div class="gym-actions">
+              <button class="view-details-btn" (click)="viewGymDetails(gym.gymId)">
+                <span class="material-icons">visibility</span>
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Tabs -->
+    <div class="quick-stats" *ngIf="activeTab === 'overview'">
+      <div class="quick-stats-header">
+        <h2>Quick Insights</h2>
+        <p>Click on any category to see detailed rankings</p>
+      </div>
+      <div class="quick-stats-grid">
+        <div class="quick-stat-card" (click)="setActiveTab('subscriptions')">
+          <div class="quick-stat-icon">
+            <span class="material-icons">people</span>
+          </div>
+          <div class="quick-stat-content">
+            <h4>Most Subscribed</h4>
+            <p>{{ topSubscribedGym?.gymName || 'N/A' }}</p>
+            <span class="quick-stat-value">{{ statisticsService.formatNumber(topSubscribedGym?.subscriptionCount || 0) }} subscribers</span>
+          </div>
+        </div>
+
+        <div class="quick-stat-card" (click)="setActiveTab('revenue')">
+          <div class="quick-stat-icon">
+            <span class="material-icons">attach_money</span>
+          </div>
+          <div class="quick-stat-content">
+            <h4>Highest Revenue</h4>
+            <p>{{ topRevenueGym?.gymName || 'N/A' }}</p>
+            <span class="quick-stat-value">{{ statisticsService.formatCurrency(topRevenueGym?.revenue || 0) }}</span>
+          </div>
+        </div>
+
+        <div class="quick-stat-card" (click)="setActiveTab('coaches')">
+          <div class="quick-stat-icon">
+            <span class="material-icons">fitness_center</span>
+          </div>
+          <div class="quick-stat-content">
+            <h4>Most Coaches</h4>
+            <p>{{ topCoachesGym?.gymName || 'N/A' }}</p>
+            <span class="quick-stat-value">{{ statisticsService.formatNumber(topCoachesGym?.coachCount || 0) }} coaches</span>
+          </div>
+        </div>
+
+        <div class="quick-stat-card" (click)="setActiveTab('rating')">
+          <div class="quick-stat-icon">
+            <span class="material-icons">star</span>
+          </div>
+          <div class="quick-stat-content">
+            <h4>Top Rated</h4>
+            <p>{{ topRatedGym?.gymName || 'N/A' }}</p>
+            <span class="quick-stat-value">{{ (topRatedGym?.averageRating || 0).toFixed(1) }}/5.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Gym Details Modal -->
+  <div class="modal-overlay" *ngIf="showGymDetails" (click)="closeGymDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()" *ngIf="selectedGym">
+      <div class="modal-header">
+        <h2>
+          <span class="material-icons">fitness_center</span>
+          {{ selectedGym.gymName }} Details
+        </h2>
+        <button class="close-btn" (click)="closeGymDetails()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="gym-details-grid">
+          <div class="detail-card">
+            <h4>Subscribers & Coaches</h4>
+            <div class="detail-stats">
+              <div class="detail-stat">
+                <span class="material-icons">people</span>
+                <div>
+                  <strong>{{ statisticsService.formatNumber(selectedGym.activeSubscribers) }}</strong>
+                  <p>Active Subscribers</p>
+                </div>
+              </div>
+              <div class="detail-stat">
+                <span class="material-icons">sports_gymnastics</span>
+                <div>
+                  <strong>{{ statisticsService.formatNumber(selectedGym.totalCoaches) }}</strong>
+                  <p>Total Coaches</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <h4>Subscriptions</h4>
+            <div class="detail-stats">
+              <div class="detail-stat">
+                <span class="material-icons">subscriptions</span>
+                <div>
+                  <strong>{{ statisticsService.formatNumber(selectedGym.activeSubscriptions) }}</strong>
+                  <p>Active Subscriptions</p>
+                </div>
+              </div>
+              <div class="detail-stat">
+                <span class="material-icons">attach_money</span>
+                <div>
+                  <strong>{{ statisticsService.formatCurrency(selectedGym.totalRevenue) }}</strong>
+                  <p>Total Revenue</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <h4>Workouts</h4>
+            <div class="detail-stats">
+              <div class="detail-stat">
+                <span class="material-icons">assignment</span>
+                <div>
+                  <strong>{{ statisticsService.formatNumber(selectedGym.totalWorkoutPlans) }}</strong>
+                  <p>Workout Plans</p>
+                </div>
+              </div>
+              <div class="detail-stat">
+                <span class="material-icons">check_circle</span>
+                <div>
+                  <strong>{{ statisticsService.formatNumber(selectedGym.completedWorkouts) }}</strong>
+                  <p>Completed Workouts</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <h4>Rating</h4>
+            <div class="detail-stats">
+              <div class="detail-stat">
+                <span class="material-icons">star</span>
+                <div>
+                  <strong>{{ (selectedGym.averageRating || 0).toFixed(1) }}/5.0</strong>
+                  <p>Average Rating</p>
+                </div>
+              </div>
+              <div class="detail-stat">
+                <span class="material-icons">rate_review</span>
+                <div>
+                  <strong>{{ statisticsService.formatNumber(selectedGym.ratingCount) }}</strong>
+                  <p>Total Reviews</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

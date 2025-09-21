@@ -1,0 +1,173 @@
+<div class="nutrition-tracker">
+  <button 
+    class="nutrition-btn" 
+    (click)="toggleTracker()"
+    [class.active]="isOpen">
+    <span class="material-icons">restaurant</span>
+    <span class="btn-text">Nutrition Tracker</span>
+    <span class="material-icons expand-icon" [class.rotated]="isOpen">expand_more</span>
+  </button>
+
+  <div class="nutrition-panel" [class.open]="isOpen">
+    <div class="panel-header">
+      <h3>Daily Nutrition Tracker</h3>
+      <div class="date-info">
+        {{ dailyLog?.date || todayDate }}
+      </div>
+    </div>
+
+    <!-- Daily Summary -->
+    <div class="daily-summary" *ngIf="dailyLog">
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-label">Calories</div>
+          <div class="summary-value">
+            {{ dailyLog.totalCalories }} / {{ getCalorieGoal() }}
+          </div>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              [style.width.%]="getProgressPercentage(dailyLog.totalCalories, getCalorieGoal())">
+            </div>
+          </div>
+        </div>
+        
+        <div class="summary-item">
+          <div class="summary-label">Protein</div>
+          <div class="summary-value">
+            {{ dailyLog.totalProtein }}g / {{ getProteinGoal() }}g
+          </div>
+          <div class="progress-bar">
+            <div 
+              class="progress-fill protein" 
+              [style.width.%]="getProgressPercentage(dailyLog.totalProtein, getProteinGoal())">
+            </div>
+          </div>
+        </div>
+        
+        <div class="summary-item">
+          <div class="summary-label">Carbs</div>
+          <div class="summary-value">{{ dailyLog.totalCarbs }}g</div>
+        </div>
+        
+        <div class="summary-item">
+          <div class="summary-label">Fat</div>
+          <div class="summary-value">{{ dailyLog.totalFat }}g</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+      <div class="search-input-group">
+        <input 
+          type="text" 
+          class="search-input"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="searchFood()"
+          placeholder="Search for food (e.g., '1 apple', 'chicken breast')"
+          [disabled]="isLoading">
+        <button 
+          class="search-btn" 
+          (click)="searchFood()"
+          [disabled]="isLoading || !searchQuery.trim()">
+          <span class="material-icons" *ngIf="!isLoading">search</span>
+          <span class="material-icons loading" *ngIf="isLoading">hourglass_empty</span>
+        </button>
+      </div>
+
+      <!-- Search Results -->
+      <div class="search-results" *ngIf="searchResults.length > 0">
+        <div class="result-item" *ngFor="let food of searchResults" (click)="selectFood(food)">
+          <div class="food-name">{{ food.food_name }}</div>
+          <div class="food-details">
+            <span>{{ food.nf_calories }} cal</span>
+            <span>{{ food.nf_protein }}g protein</span>
+            <span>{{ food.nf_total_carbohydrate }}g carbs</span>
+            <span>{{ food.nf_total_fat }}g fat</span>
+          </div>
+          <div class="serving-info">
+            Per {{ food.serving_qty }} {{ food.serving_unit }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Food Form -->
+      <div class="add-food-form" *ngIf="showAddForm && selectedFood">
+        <div class="selected-food">
+          <h4>{{ selectedFood.food_name }}</h4>
+          <div class="food-nutrition">
+            <span>{{ selectedFood.nf_calories }} cal</span>
+            <span>{{ selectedFood.nf_protein }}g protein</span>
+            <span>{{ selectedFood.nf_total_carbohydrate }}g carbs</span>
+            <span>{{ selectedFood.nf_total_fat }}g fat</span>
+          </div>
+        </div>
+        
+        <div class="serving-controls">
+          <label>Serving Size:</label>
+          <div class="serving-input-group">
+            <button class="serving-btn" (click)="servingSize = max(0.25, servingSize - 0.25)">-</button>
+            <input 
+              type="number" 
+              class="serving-input"
+              [(ngModel)]="servingSize"
+              min="0.25"
+              step="0.25">
+            <button class="serving-btn" (click)="servingSize = servingSize + 0.25">+</button>
+          </div>
+          <span class="serving-unit">{{ selectedFood.serving_unit }}</span>
+        </div>
+
+        <div class="calculated-nutrition">
+          <div class="calc-item">
+            <span>Calories: {{ calculateCalories(selectedFood.nf_calories, servingSize) }}</span>
+          </div>
+          <div class="calc-item">
+            <span>Protein: {{ calculateProtein(selectedFood.nf_protein, servingSize) }}g</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-cancel" (click)="resetForm()">Cancel</button>
+          <button class="btn-add" (click)="addFoodToLog()">Add to Log</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Log -->
+    <div class="daily-log" *ngIf="dailyLog && dailyLog.entries.length > 0">
+      <div class="log-header">
+        <h4>Today's Entries</h4>
+        <button class="clear-btn" (click)="clearTodayLog()">Clear All</button>
+      </div>
+      
+      <div class="log-entries">
+        <div class="log-entry" *ngFor="let entry of dailyLog.entries">
+          <div class="entry-info">
+            <div class="entry-name">{{ entry.food_name }}</div>
+            <div class="entry-details">
+              {{ entry.calories }} cal • {{ entry.protein }}g protein • {{ entry.serving_size }}
+            </div>
+            <div class="entry-time">{{ formatTime(entry.timestamp) }}</div>
+          </div>
+          <button 
+            class="remove-btn" 
+            (click)="removeEntry(entry.id)"
+            title="Remove entry">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!dailyLog || dailyLog.entries.length === 0">
+      <div class="empty-icon">
+        <span class="material-icons">restaurant_menu</span>
+      </div>
+      <p>No food entries yet today</p>
+      <p class="empty-subtitle">Search for food above to start tracking your nutrition</p>
+    </div>
+  </div>
+</div>

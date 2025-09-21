@@ -1,0 +1,59 @@
+<div class="schedule-container">
+  <div class="page-header">
+    <h1>Gym Schedule</h1>
+    <a routerLink="/coach" class="back-btn">
+      <span class="material-icons">arrow_back</span>
+      Back to Dashboard
+    </a>
+  </div>
+
+  <div class="schedule-content">
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Loading schedule...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && !schedules.length">
+      <span class="material-icons">schedule</span>
+      <h2>No Schedule Available</h2>
+      <p>The gym schedule has not been set up yet. Please contact your admin for more information.</p>
+    </div>
+
+    <form class="schedule-grid" *ngIf="!loading && schedules.length" novalidate (submit)="$event.preventDefault()">
+      <div class="schedule-card" *ngFor="let s of schedules; let i = index" 
+           [class]="'card-' + (i % 7)">
+        <div class="card-header">
+          <span class="day-icon material-icons">today</span>
+          <h3>{{ s.dayOfWeek }}</h3>
+        </div>
+        
+        <div class="time-info">
+          <div class="time-block">
+            <span class="material-icons">schedule</span>
+            <div class="time-details">
+              <span class="label">Opening</span>
+              <span class="time">{{ s.openTime }}</span>
+            </div>
+          </div>
+          
+          <div class="time-separator">—</div>
+          
+          <div class="time-block">
+            <span class="material-icons">schedule</span>
+            <div class="time-details">
+              <span class="label">Closing</span>
+              <span class="time">{{ s.closeTime }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="note-section" *ngIf="s.note">
+          <span class="material-icons">note</span>
+          <p>{{ s.note }}</p>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+

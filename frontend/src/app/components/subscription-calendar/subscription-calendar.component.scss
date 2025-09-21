@@ -1,0 +1,319 @@
+.subscription-calendar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+
+    h2 {
+      margin: 0;
+      color: #333;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .calendar-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+
+      .nav-btn {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          background: #e9ecef;
+          border-color: #adb5bd;
+        }
+
+        .material-icons {
+          font-size: 20px;
+          color: #495057;
+        }
+      }
+
+      .month-year {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        min-width: 180px;
+        text-align: center;
+      }
+
+      .today-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background: #0056b3;
+        }
+      }
+    }
+  }
+
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #666;
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+    }
+  }
+
+  .calendar-container {
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      margin-bottom: 10px;
+
+      .weekday {
+        padding: 15px 10px;
+        text-align: center;
+        font-weight: 600;
+        color: #666;
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+        font-size: 14px;
+      }
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: #dee2e6;
+      border-radius: 0 0 12px 12px;
+      overflow: hidden;
+
+      .calendar-day {
+        min-height: 120px;
+        background: white;
+        padding: 8px;
+        position: relative;
+        border: 1px solid #f0f0f0;
+
+        &.empty {
+          background: #f8f9fa;
+        }
+
+        &.today {
+          background: #e3f2fd;
+          border: 2px solid #2196f3;
+
+          .day-number {
+            background: #2196f3;
+            color: white;
+            font-weight: 600;
+          }
+        }
+
+        .day-number {
+          font-weight: 500;
+          font-size: 14px;
+          margin-bottom: 4px;
+          padding: 2px 6px;
+          border-radius: 4px;
+          display: inline-block;
+        }
+
+        .events-container {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+
+          .event-bar {
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            font-size: 11px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            position: relative;
+
+            &:hover {
+              opacity: 0.8;
+            }
+
+            &.event-start {
+              border-top-left-radius: 8px;
+              border-bottom-left-radius: 8px;
+            }
+
+            &.event-end {
+              border-top-right-radius: 8px;
+              border-bottom-right-radius: 8px;
+            }
+
+            .event-title {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              max-width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .legend {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
+
+    h4 {
+      margin: 0 0 15px 0;
+      color: #333;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .legend-items {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .legend-color {
+          width: 16px;
+          height: 16px;
+          border-radius: 4px;
+        }
+
+        span {
+          font-size: 14px;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  .no-subscriptions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+
+    .no-subscriptions-content {
+      text-align: center;
+      color: #666;
+
+      .material-icons {
+        font-size: 64px;
+        color: #ccc;
+        margin-bottom: 20px;
+      }
+
+      h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .subscription-calendar {
+    padding: 15px;
+    margin: 10px;
+
+    .calendar-header {
+      flex-direction: column;
+      gap: 20px;
+      align-items: stretch;
+
+      .calendar-controls {
+        justify-content: center;
+      }
+    }
+
+    .calendar-container {
+      .calendar-grid {
+        .calendar-day {
+          min-height: 80px;
+          padding: 4px;
+
+          .day-number {
+            font-size: 12px;
+          }
+
+          .events-container {
+            .event-bar {
+              height: 16px;
+              font-size: 10px;
+              padding: 0 4px;
+            }
+          }
+        }
+      }
+    }
+
+    .legend {
+      .legend-items {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  }
+}

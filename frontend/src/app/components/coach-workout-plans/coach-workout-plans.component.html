@@ -1,0 +1,297 @@
+<div class="workout-plans-container">
+  <div class="section-header">
+    <h2>
+      <span class="material-icons">fitness_center</span>
+      Workout Plans Management
+    </h2>
+    <p class="section-description">Create and manage workout plans for your gym members</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <span class="material-icons">refresh</span>
+    </div>
+    <p>Loading workout plans...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <div class="error-message">
+      <span class="material-icons">error</span>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadData()">
+        <span class="material-icons">refresh</span>
+        Retry
+      </button>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div *ngIf="!isLoading && !error" class="action-buttons">
+    <button class="btn-primary" (click)="openCreateForm()">
+      <span class="material-icons">add</span>
+      Create Workout Plan
+    </button>
+    <button class="btn-secondary" (click)="openAssignForm()">
+      <span class="material-icons">assignment</span>
+      Assign to Member
+    </button>
+  </div>
+
+  <!-- Create Workout Plan Form -->
+  <div *ngIf="showCreateForm" class="form-modal">
+    <div class="form-container">
+      <div class="form-header">
+        <h3>Create New Workout Plan</h3>
+        <button class="close-btn" (click)="closeForms()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <form [formGroup]="workoutPlanForm" (ngSubmit)="createWorkoutPlan()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="title">Title *</label>
+            <input type="text" id="title" formControlName="title" placeholder="Enter workout plan title">
+          </div>
+          <div class="form-group">
+            <label for="duration">Duration (minutes) *</label>
+            <input type="number" id="duration" formControlName="duration" placeholder="e.g., 45">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea id="description" formControlName="description" rows="3" placeholder="Describe the workout plan"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="difficultyLevel">Difficulty Level *</label>
+          <select id="difficultyLevel" formControlName="difficultyLevel">
+            <option *ngFor="let level of difficultyLevels" [value]="level.value">{{ level.label }}</option>
+          </select>
+        </div>
+
+        <div class="exercises-section">
+          <div class="exercises-header">
+            <h4>Exercises *</h4>
+            <button type="button" class="btn-add-exercise" (click)="addExercise()">
+              <span class="material-icons">add</span>
+              Add Exercise
+            </button>
+          </div>
+
+          <div formArrayName="exercises" class="exercises-list">
+            <div *ngFor="let exercise of exercises.controls; let i = index" [formGroupName]="i" class="exercise-item">
+              <div class="exercise-header">
+                <h5>Exercise {{ i + 1 }}</h5>
+                <button type="button" class="remove-exercise" (click)="removeExercise(i)">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Exercise Name *</label>
+                  <input type="text" formControlName="name" placeholder="e.g., Push-ups">
+                </div>
+                <div class="form-group">
+                  <label>Sets *</label>
+                  <input type="number" formControlName="sets" placeholder="e.g., 3">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Reps *</label>
+                  <input type="number" formControlName="reps" placeholder="e.g., 12">
+                </div>
+                <div class="form-group">
+                  <label>Duration (seconds) *</label>
+                  <input type="number" formControlName="duration" placeholder="e.g., 30">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Rest Time *</label>
+                  <input type="text" formControlName="restTime" placeholder="e.g., 30 seconds">
+                </div>
+                <div class="form-group">
+                  <label>Instructions</label>
+                  <input type="text" formControlName="instructions" placeholder="Additional instructions">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Description</label>
+                <textarea formControlName="description" rows="2" placeholder="Exercise description"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeForms()">Cancel</button>
+          <button type="submit" class="btn-submit" [disabled]="workoutPlanForm.invalid">
+            <span class="material-icons">save</span>
+            Create Workout Plan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Assign Workout Plan Form -->
+  <div *ngIf="showAssignForm" class="form-modal">
+    <div class="form-container">
+      <div class="form-header">
+        <h3>Assign Workout Plan</h3>
+        <button class="close-btn" (click)="closeForms()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <form [formGroup]="assignForm" (ngSubmit)="assignWorkoutPlan()">
+        <div class="form-group">
+          <label for="workoutPlanId">Workout Plan *</label>
+          <select id="workoutPlanId" formControlName="workoutPlanId">
+            <option value="">Select a workout plan</option>
+            <option *ngFor="let plan of workoutPlans" [value]="plan.id">{{ plan.title }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="memberId">Member *</label>
+          <select id="memberId" formControlName="memberId">
+            <option value="">Select a member</option>
+            <option *ngFor="let member of subscribedMembers" [value]="member.id">
+              {{ member.firstname }} {{ member.lastname }} ({{ member.email }})
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Notes</label>
+          <textarea id="notes" formControlName="notes" rows="3" placeholder="Additional notes for the member"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeForms()">Cancel</button>
+          <button type="submit" class="btn-submit" [disabled]="assignForm.invalid">
+            <span class="material-icons">assignment</span>
+            Assign Workout Plan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Workout Plans Grid -->
+  <div *ngIf="!isLoading && !error && workoutPlans.length > 0" class="workout-plans-grid">
+    <div class="workout-plan-card" *ngFor="let plan of workoutPlans">
+      <div class="card-header">
+        <h3>{{ plan.title }}</h3>
+        <div class="card-badges">
+          <span class="difficulty-badge" [ngClass]="getDifficultyBadgeClass(plan.difficultyLevel)">
+            {{ plan.difficultyLevel }}
+          </span>
+          <span class="duration-badge">{{ formatDuration(plan.duration) }}</span>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <p class="description">{{ plan.description }}</p>
+        
+        <div class="exercises-preview">
+          <h4>Exercises ({{ plan.exercises.length }})</h4>
+          <ul>
+            <li *ngFor="let exercise of plan.exercises.slice(0, 3)">
+              {{ exercise.name }} - {{ exercise.sets }}x{{ exercise.reps }}
+            </li>
+            <li *ngIf="plan.exercises.length > 3" class="more-exercises">
+              +{{ plan.exercises.length - 3 }} more exercises
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-meta">
+          <span class="meta-item">
+            <span class="material-icons">person</span>
+            {{ plan.coachName }}
+          </span>
+          <span class="meta-item">
+            <span class="material-icons">schedule</span>
+            {{ plan.createdAt | date:'short' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="action-btn assign-btn" (click)="openAssignForm(plan)" title="Assign to Member">
+          <span class="material-icons">assignment</span>
+        </button>
+        <button class="action-btn delete-btn" (click)="deleteWorkoutPlan(plan.id)" title="Delete Plan">
+          <span class="material-icons">delete</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignments List -->
+  <div *ngIf="!isLoading && !error && assignments.length > 0" class="assignments-section">
+    <h3>Recent Assignments</h3>
+    <div class="assignments-list">
+      <div class="assignment-card" *ngFor="let assignment of assignments">
+        <div class="assignment-header">
+          <h4>{{ assignment.workoutPlan.title }}</h4>
+          <span class="status-badge" [ngClass]="getStatusBadgeClass(assignment.status)">
+            {{ assignment.status }}
+          </span>
+        </div>
+
+        <div class="assignment-details">
+          <div class="detail-row">
+            <span class="label">Member:</span>
+            <span>{{ assignment.memberName }} ({{ assignment.memberEmail }})</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Assigned:</span>
+            <span>{{ assignment.assignedAt | date:'short' }}</span>
+          </div>
+          <div class="detail-row" *ngIf="assignment.notes">
+            <span class="label">Notes:</span>
+            <span>{{ assignment.notes }}</span>
+          </div>
+        </div>
+
+        <div class="assignment-actions">
+          <button *ngIf="assignment.status === 'ASSIGNED'" 
+                  class="btn-status" 
+                  (click)="updateAssignmentStatus(assignment.id, 'IN_PROGRESS')">
+            Mark as In Progress
+          </button>
+          <button *ngIf="assignment.status === 'IN_PROGRESS'" 
+                  class="btn-status" 
+                  (click)="updateAssignmentStatus(assignment.id, 'COMPLETED')">
+            Mark as Completed
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !error && workoutPlans.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <span class="material-icons">fitness_center</span>
+    </div>
+    <h3>No Workout Plans</h3>
+    <p>Create your first workout plan to get started.</p>
+    <button class="btn-primary" (click)="openCreateForm()">
+      <span class="material-icons">add</span>
+      Create Workout Plan
+    </button>
+  </div>
+</div>

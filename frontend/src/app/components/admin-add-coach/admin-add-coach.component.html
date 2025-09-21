@@ -1,0 +1,31 @@
+<section class="add-coach-wrapper">
+  <div class="page-container">
+    <header class="header">
+      <h2>Add Coach</h2>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+      <label>First name<input formControlName="firstname" /></label>
+      <label>Last name<input formControlName="lastname" /></label>
+      <label class="span-2">Email<input formControlName="email" type="email" /></label>
+      <label>Phone<input formControlName="phone" /></label>
+      <label>CIN<input formControlName="cin" /></label>
+      <label class="span-2">Speciality<input formControlName="speciality" /></label>
+      <label class="span-2">Gym Name (optional)<input formControlName="gymName" placeholder="Assign to my gym by name" /></label>
+      <label class="span-2">Temporary password (optional)<input formControlName="password" type="text" placeholder="Auto-generated if empty" /></label>
+
+      <div class="actions span-2">
+        <a routerLink="/admin" class="return-btn">
+          <span class="material-icons">arrow_back</span>
+          Return
+        </a>
+        <button class="primary" type="submit" [disabled]="isSubmitting">{{ isSubmitting ? 'Saving...' : 'Add Coach' }}</button>
+      </div>
+    </form>
+
+    <div *ngIf="successMsg" class="alert success">{{ successMsg }}</div>
+    <div *ngIf="errorMsg" class="alert danger">{{ errorMsg }}</div>
+  </div>
+</section>
+
+

@@ -1,0 +1,57 @@
+<section class="view-wrapper">
+  <div class="page-container">
+    <header class="header">
+      <div class="title" style="display:flex;align-items:center;gap:10px">
+        <img src="/assets/safe-fitness-logo.svg" alt="Safe Fitness" style="width:28px;height:28px" />
+        <strong>Safe Fitness</strong>
+      </div>
+      <button class="return-btn" (click)="goBack()">
+        <span class="material-icons">arrow_back</span>
+        Back to Dashboard
+      </button>
+    </header>
+
+    <div class="cards-grid" *ngIf="gyms?.length; else empty">
+      <div class="gym-card" *ngFor="let g of gyms">
+        <div class="gym-card-header">
+          <h3>{{ g.name }} <span class="code" *ngIf="g.code">#{{ g.code }}</span></h3>
+          <div class="sub">{{ g.address || '—' }}</div>
+          <div class="pricing-info" *ngIf="g.monthlyPrice || g.annualPrice">
+            <div class="price-item" *ngIf="g.monthlyPrice">
+              <span class="price-label">Monthly:</span>
+              <span class="price-value">${{ g.monthlyPrice }}</span>
+            </div>
+            <div class="price-item" *ngIf="g.annualPrice">
+              <span class="price-label">Annual:</span>
+              <span class="price-value">${{ g.annualPrice }}</span>
+            </div>
+          </div>
+          <div class="rating-section" *ngIf="g.averageRating > 0 || g.ratingCount > 0">
+            <app-star-rating 
+              [rating]="g.averageRating || 0" 
+              [readonly]="true" 
+              [showCount]="true" 
+              [count]="g.ratingCount || 0">
+            </app-star-rating>
+          </div>
+        </div>
+        <div class="mini-map" id="map-{{ g.id }}"></div>
+        <div class="gallery" *ngIf="g.photos?.length" style="margin-top:10px">
+          <div class="grid-photos">
+            <img *ngFor="let ph of g.photos" [src]="photoUrl(ph?.url)" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #empty>
+      <div class="empty" style="text-align:center;color:#6b7280;padding:40px">
+        <span class="material-icons">inbox</span>
+        <h3>No Gyms Yet</h3>
+        <p>Gyms created by admins will be listed here.</p>
+      </div>
+    </ng-template>
+  </div>
+</section>
+
+

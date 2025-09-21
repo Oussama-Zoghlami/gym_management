@@ -1,0 +1,59 @@
+<section class="view-wrapper">
+  <div class="page-container">
+    <header class="header">
+      <div class="title" style="display:flex;align-items:center;gap:10px">
+        <img src="/assets/safe-fitness-logo.svg" alt="Safe Fitness" style="width:28px;height:28px" />
+        <strong>Safe Fitness</strong>
+      </div>
+      <div class="actions">
+        <a routerLink="/admin" class="primary-btn" style="text-decoration:none">
+          <span class="material-icons">home</span>
+          Dashboard
+        </a>
+      </div>
+    </header>
+
+    
+    <div class="cards-grid" *ngIf="gyms?.length">
+      <div class="gym-card" *ngFor="let g of gyms">
+        <div class="gym-card-header">
+          <h3>{{ g.name }} <span class="code">#{{ g.code }}</span></h3>
+          <div class="sub">{{ g.address || '—' }}</div>
+          <div class="pricing-info" *ngIf="g.monthlyPrice || g.annualPrice">
+            <div class="price-item" *ngIf="g.monthlyPrice">
+              <span class="price-label">Monthly:</span>
+              <span class="price-value">${{ g.monthlyPrice }}</span>
+            </div>
+            <div class="price-item" *ngIf="g.annualPrice">
+              <span class="price-label">Annual:</span>
+              <span class="price-value">${{ g.annualPrice }}</span>
+            </div>
+          </div>
+          <div class="rating-section" *ngIf="g.averageRating > 0 || g.ratingCount > 0">
+            <app-star-rating 
+              [rating]="g.averageRating || 0" 
+              [readonly]="true" 
+              [showCount]="true" 
+              [count]="g.ratingCount || 0">
+            </app-star-rating>
+          </div>
+        </div>
+        <div class="mini-map" id="map-{{ g.id }}"></div>
+        <div class="gallery" *ngIf="g.photos?.length" style="margin-top:10px">
+          <div class="grid-photos">
+            <img *ngFor="let ph of g.photos" [src]="photoUrl(ph?.url)" />
+          </div>
+        </div>
+        <div class="actions" style="margin-top:10px">
+          <a class="btn btn-secondary" [routerLink]="['/admin/gym/schedule']" [queryParams]="{ code: g.code }">View Schedule</a>
+          <button class="btn btn-danger" (click)="deleteGym(g.id, g.name)" [disabled]="isDeleting">
+            <span class="material-icons">delete</span>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+

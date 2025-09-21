@@ -1,0 +1,127 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>
+        <span class="material-icons">person</span>
+        Member Details
+      </h2>
+      <button class="close-btn" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body" *ngIf="member">
+      <!-- Member Avatar and Basic Info -->
+      <div class="member-profile">
+        <div class="member-avatar-large">
+          <span class="avatar-text">{{ getMemberInitials(member) }}</span>
+        </div>
+        <div class="member-basic-info">
+          <h3 class="member-name">{{ member.firstname }} {{ member.lastname }}</h3>
+          <p class="member-email">
+            <span class="material-icons">email</span>
+            {{ member.email }}
+          </p>
+          <div class="gym-badge-large" [ngClass]="getGymBadgeClass(member.gymCode)">
+            <span class="material-icons">fitness_center</span>
+            {{ member.gymCode }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Member Details Grid -->
+      <div class="details-grid">
+        <div class="detail-group">
+          <div class="detail-label">
+            <span class="material-icons">person</span>
+            Full Name
+          </div>
+          <div class="detail-value">{{ member.firstname }} {{ member.lastname }}</div>
+        </div>
+        
+        <div class="detail-group">
+          <div class="detail-label">
+            <span class="material-icons">email</span>
+            Email Address
+          </div>
+          <div class="detail-value">
+            <a href="mailto:{{ member.email }}" class="email-link">{{ member.email }}</a>
+          </div>
+        </div>
+        
+        <div class="detail-group" *ngIf="member.phone">
+          <div class="detail-label">
+            <span class="material-icons">phone</span>
+            Phone Number
+          </div>
+          <div class="detail-value">
+            <a href="tel:{{ member.phone }}" class="phone-link">{{ member.phone }}</a>
+          </div>
+        </div>
+        
+        <div class="detail-group">
+          <div class="detail-label">
+            <span class="material-icons">fitness_center</span>
+            Gym Name
+          </div>
+          <div class="detail-value">{{ member.gymName }}</div>
+        </div>
+        
+        <div class="detail-group">
+          <div class="detail-label">
+            <span class="material-icons">qr_code</span>
+            Gym Code
+          </div>
+          <div class="detail-value">
+            <span class="gym-code-badge" [ngClass]="getGymBadgeClass(member.gymCode)">
+              {{ member.gymCode }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="detail-group">
+          <div class="detail-label">
+            <span class="material-icons">calendar_today</span>
+            Subscription Date
+          </div>
+          <div class="detail-value">{{ formatDate(member.subscriptionDate) }}</div>
+        </div>
+        
+        <div class="detail-group">
+          <div class="detail-label">
+            <span class="material-icons">schedule</span>
+            Member Since
+          </div>
+          <div class="detail-value">{{ getMembershipDuration(member.subscriptionDate) }}</div>
+        </div>
+        
+        <div class="detail-group">
+          <div class="detail-label">
+            <span class="material-icons">verified</span>
+            Member ID
+          </div>
+          <div class="detail-value">#{{ member.id }}</div>
+        </div>
+      </div>
+
+      <!-- Member Status -->
+      <div class="member-status">
+        <div class="status-indicator active">
+          <span class="material-icons">check_circle</span>
+          <span>Active Member</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="onClose()">
+        <span class="material-icons">close</span>
+        Close
+      </button>
+      <button class="btn btn-primary" (click)="contactMember()" *ngIf="member">
+        <span class="material-icons">email</span>
+        Contact Member
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<div class="cancel-container">
+  <div class="cancel-card">
+    <div class="cancel-icon">
+      <span class="material-icons">cancel</span>
+    </div>
+    
+    <h1>Subscription Cancelled</h1>
+    <p class="cancel-message">
+      Your subscription process was cancelled. Don't worry, no payment was made. 
+      You can try again whenever you're ready to join a gym.
+    </p>
+    
+    <div class="actions">
+      <button class="btn-secondary" (click)="goToDashboard()">
+        <span class="material-icons">dashboard</span>
+        Back to Dashboard
+      </button>
+      <button class="btn-primary" (click)="tryAgain()">
+        <span class="material-icons">refresh</span>
+        Try Again
+      </button>
+    </div>
+    
+    <div class="help-info">
+      <h3>Need Help?</h3>
+      <p>
+        If you encountered any issues or have questions about our subscription process, 
+        please don't hesitate to contact our support team.
+      </p>
+    </div>
+  </div>
+</div>

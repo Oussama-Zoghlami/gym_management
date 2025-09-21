@@ -1,0 +1,19 @@
+<div class="star-rating">
+  <div class="stars">
+    <span 
+      *ngFor="let star of stars" 
+      [class]="getStarClass(star)"
+      (click)="onStarClick(star)"
+      (mouseenter)="onStarHover(star)"
+      (mouseleave)="onStarLeave()"
+      [style.cursor]="readonly ? 'default' : 'pointer'">
+      ★
+    </span>
+  </div>
+  <span class="rating-info" *ngIf="showCount && count > 0">
+    {{ rating.toFixed(1) }} ({{ count }} {{ count === 1 ? 'review' : 'reviews' }})
+  </span>
+  <span class="rating-info" *ngIf="!showCount && rating > 0">
+    {{ rating.toFixed(1) }}
+  </span>
+</div>

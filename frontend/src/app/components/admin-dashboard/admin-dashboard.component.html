@@ -1,0 +1,78 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <div class="logo-section">
+      <img src="assets/safe-fitness-logo.svg" alt="Safe Fitness" class="logo">
+      <h1>Safe Fitness - Admin Dashboard</h1>
+    </div>
+    <div class="header-actions">
+      <div class="menu" tabindex="0">
+        <a class="manage-btn">
+          <span class="material-icons">fitness_center</span>
+          Manage Gym
+        </a>
+        <div class="submenu">
+          <a routerLink="/admin/gym/view" class="submenu-item">
+            <span class="material-icons">visibility</span>
+            View Gyms
+          </a>
+          <a routerLink="/admin/gym" class="submenu-item">
+            <span class="material-icons">add_box</span>
+            Add
+          </a>
+          <a [routerLink]="['/admin/gym/edit']" [queryParams]="{ create: true }" class="submenu-item">
+            <span class="material-icons">edit</span>
+            Edit Gym
+          </a>
+          <a routerLink="/admin/gym/schedule" class="submenu-item">
+            <span class="material-icons">calendar_month</span>
+            Gym Schedule
+          </a>
+        </div>
+      </div>
+      <a class="manage-btn" routerLink="/admin/add-coach">
+        <span class="material-icons">person_add</span>
+        Add Coach
+      </a>
+      <div class="menu" tabindex="0">
+        <a class="manage-btn">
+          <span class="material-icons">groups</span>
+          View Coaches
+        </a>
+        <div class="submenu submenu-coaches">
+          <div class="submenu-coaches-row">
+            <input [(ngModel)]="coachGymCode" maxlength="3" placeholder="Gym code (e.g. 123)" (keyup.enter)="loadCoachesByCode()" />
+            <button class="submenu-action" (click)="loadCoachesByCode()">
+              <span class="material-icons">refresh</span>
+              Reload
+            </button>
+          </div>
+          <div class="submenu-coaches-list" *ngIf="coaches?.length; else noCoaches">
+            <div class="coach-item" *ngFor="let c of coaches">
+              <span class="material-icons">person</span>
+              <div class="coach-info">
+                <div class="name">{{ c.firstname }} {{ c.lastname }}</div>
+                <div class="meta">{{ c.email }} <span *ngIf="c.speciality">• {{ c.speciality }}</span></div>
+              </div>
+            </div>
+          </div>
+          <ng-template #noCoaches>
+            <div class="empty">No coaches found</div>
+          </ng-template>
+        </div>
+      </div>
+      <button class="logout-btn" (click)="logout()">
+        <span class="material-icons">logout</span>
+        Logout
+      </button>
+    </div>
+  </header>
+  <main class="dashboard-content">
+    <h2>Welcome, Admin!</h2>
+    <p>Manage gym operations, members, and schedules from here.</p>
+    
+    <!-- Subscribed Members Section -->
+    <app-subscribed-members></app-subscribed-members>
+  </main>
+</div>
+
+

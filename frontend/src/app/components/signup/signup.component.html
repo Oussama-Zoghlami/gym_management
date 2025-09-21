@@ -1,0 +1,194 @@
+<div class="signup-container">
+  <div class="signup-wrapper">
+    <!-- Logo and Branding -->
+    <div class="logo-section">
+      <img src="assets/safe-fitness-logo.svg" alt="Safe Fitness" class="logo">
+      <h1 class="brand-name">Safe Fitness</h1>
+      <p class="tagline">Your Journey to Fitness Starts Here</p>
+    </div>
+
+    <!-- Signup Form Card -->
+    <div class="signup-card">
+      <h2 class="signup-title">Create Your Account</h2>
+      
+      <!-- Toggle Buttons for Admin/Member -->
+      <div class="signup-type-toggle">
+        <button 
+          type="button"
+          class="toggle-btn"
+          [class.active]="!isAdminSignup"
+          (click)="toggleSignupType()">
+          <span class="material-icons">person</span>
+          Member Signup
+        </button>
+        <button 
+          type="button"
+          class="toggle-btn"
+          [class.active]="isAdminSignup"
+          (click)="toggleSignupType()">
+          <span class="material-icons">admin_panel_settings</span>
+          Admin Signup
+        </button>
+      </div>
+
+      <!-- Alert Messages -->
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+
+      <!-- Signup Form -->
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstname">First Name *</label>
+            <input
+              type="text"
+              id="firstname"
+              formControlName="firstname"
+              placeholder="Enter your first name"
+              [class.error-input]="f['firstname'].touched && f['firstname'].errors">
+            <span *ngIf="f['firstname'].touched && f['firstname'].errors?.['required']" class="error">
+              First name is required
+            </span>
+            <span *ngIf="f['firstname'].touched && f['firstname'].errors?.['minlength']" class="error">
+              First name must be at least 2 characters
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="lastname">Last Name *</label>
+            <input
+              type="text"
+              id="lastname"
+              formControlName="lastname"
+              placeholder="Enter your last name"
+              [class.error-input]="f['lastname'].touched && f['lastname'].errors">
+            <span *ngIf="f['lastname'].touched && f['lastname'].errors?.['required']" class="error">
+              Last name is required
+            </span>
+            <span *ngIf="f['lastname'].touched && f['lastname'].errors?.['minlength']" class="error">
+              Last name must be at least 2 characters
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="Enter your email"
+            [class.error-input]="f['email'].touched && f['email'].errors">
+          <span *ngIf="f['email'].touched && f['email'].errors?.['required']" class="error">
+            Email is required
+          </span>
+          <span *ngIf="f['email'].touched && f['email'].errors?.['email']" class="error">
+            Please enter a valid email address
+          </span>
+        </div>
+
+        <!-- CIN Field (Only for Admin) -->
+        <div class="form-group" *ngIf="isAdminSignup">
+          <label for="cin">CIN (National ID) *</label>
+          <input
+            type="text"
+            id="cin"
+            formControlName="cin"
+            placeholder="Enter your CIN number"
+            [class.error-input]="f['cin'].touched && f['cin'].errors">
+          <span *ngIf="f['cin'].touched && f['cin'].errors?.['required']" class="error">
+            CIN is required for Admin registration
+          </span>
+          <span *ngIf="f['cin'].touched && f['cin'].errors?.['minlength']" class="error">
+            CIN must be at least 8 characters
+          </span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">Password *</label>
+            <div class="password-input-wrapper">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                id="password"
+                formControlName="password"
+                placeholder="Create a password"
+                [class.error-input]="f['password'].touched && f['password'].errors">
+              <button 
+                type="button" 
+                class="password-toggle"
+                (click)="togglePasswordVisibility('password')">
+                <span class="material-icons">
+                  {{ showPassword ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+            <span *ngIf="f['password'].touched && f['password'].errors?.['required']" class="error">
+              Password is required
+            </span>
+            <span *ngIf="f['password'].touched && f['password'].errors?.['minlength']" class="error">
+              Password must be at least 6 characters
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password *</label>
+            <div class="password-input-wrapper">
+              <input
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                placeholder="Confirm your password"
+                [class.error-input]="f['confirmPassword'].touched && f['confirmPassword'].errors">
+              <button 
+                type="button" 
+                class="password-toggle"
+                (click)="togglePasswordVisibility('confirmPassword')">
+                <span class="material-icons">
+                  {{ showConfirmPassword ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+            </div>
+            <span *ngIf="f['confirmPassword'].touched && f['confirmPassword'].errors?.['required']" class="error">
+              Please confirm your password
+            </span>
+            <span *ngIf="f['confirmPassword'].touched && signupForm.errors?.['passwordMismatch']" class="error">
+              Passwords do not match
+            </span>
+          </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box" [class.admin-info]="isAdminSignup">
+          <span class="material-icons">info</span>
+          <p *ngIf="isAdminSignup">
+            Admin registration requires CIN verification and SuperAdmin approval.
+          </p>
+          <p *ngIf="!isAdminSignup">
+            Member registration requires email verification and SuperAdmin approval.
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          class="btn btn-primary submit-btn"
+          [disabled]="isLoading || signupForm.invalid">
+          <span *ngIf="!isLoading">
+            Register as {{ isAdminSignup ? 'Admin' : 'Member' }}
+          </span>
+          <span *ngIf="isLoading" class="loading-spinner"></span>
+        </button>
+      </form>
+
+      <!-- Links -->
+      <div class="form-links">
+        <p>Already have an account? <a routerLink="/signin">Sign In</a></p>
+      </div>
+    </div>
+  </div>
+</div>

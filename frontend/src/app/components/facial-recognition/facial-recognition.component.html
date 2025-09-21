@@ -1,0 +1,111 @@
+<div class="facial-recognition-container">
+  <div class="header">
+    <h2>Facial Recognition Login</h2>
+    <p>Use your face to access your gym account</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Recognition Result -->
+  <div *ngIf="recognitionResult" class="recognition-result">
+    <div *ngIf="recognitionResult.recognized" class="success-result">
+      <i class="fas fa-check-circle"></i>
+      <h3>Welcome back!</h3>
+      <p><strong>{{ recognitionResult.member?.firstname }} {{ recognitionResult.member?.lastname }}</strong></p>
+      <p>Similarity Score: {{ (recognitionResult.similarity_score! * 100).toFixed(1) }}%</p>
+      <button class="btn btn-primary" (click)="goToRegistration()">Continue to Dashboard</button>
+    </div>
+    
+    <div *ngIf="!recognitionResult.recognized" class="error-result">
+      <i class="fas fa-times-circle"></i>
+      <h3>Face Not Recognized</h3>
+      <p>{{ recognitionResult.message }}</p>
+      <button class="btn btn-secondary" (click)="goToRegistration()">Register New Account</button>
+    </div>
+  </div>
+
+  <!-- Camera Section -->
+  <div class="camera-section">
+    <div class="camera-container">
+      <video 
+        #videoElement 
+        [class.hidden]="!isCameraActive"
+        autoplay 
+        muted 
+        playsinline>
+      </video>
+      
+      <canvas 
+        #canvasElement 
+        [class.hidden]="true">
+      </canvas>
+
+      <div *ngIf="!isCameraActive" class="camera-placeholder">
+        <i class="fas fa-camera"></i>
+        <p>Camera not active</p>
+      </div>
+    </div>
+
+    <div class="camera-controls">
+      <button 
+        *ngIf="!isCameraActive" 
+        class="btn btn-primary" 
+        (click)="startCamera()"
+        [disabled]="isRecognizing">
+        <i class="fas fa-video"></i>
+        Start Camera
+      </button>
+      
+      <button 
+        *ngIf="isCameraActive" 
+        class="btn btn-secondary" 
+        (click)="stopCamera()"
+        [disabled]="isRecognizing">
+        <i class="fas fa-stop"></i>
+        Stop Camera
+      </button>
+      
+      <button 
+        *ngIf="isCameraActive" 
+        class="btn btn-success" 
+        (click)="captureAndRecognize()"
+        [disabled]="isRecognizing">
+        <i class="fas fa-search" *ngIf="!isRecognizing"></i>
+        <i class="fas fa-spinner fa-spin" *ngIf="isRecognizing"></i>
+        {{ isRecognizing ? 'Recognizing...' : 'Recognize Face' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Upload Section -->
+  <div class="upload-section">
+    <div class="divider">
+      <span>OR</span>
+    </div>
+    
+    <div class="upload-container">
+      <label for="file-upload" class="upload-label">
+        <i class="fas fa-upload"></i>
+        <span>Upload Photo</span>
+      </label>
+      <input 
+        id="file-upload" 
+        type="file" 
+        accept="image/*" 
+        (change)="uploadAndRecognize($event)"
+        [disabled]="isRecognizing">
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="isRecognizing" class="loading-overlay">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Processing your face...</p>
+    </div>
+  </div>
+</div>

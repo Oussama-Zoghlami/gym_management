@@ -1,0 +1,152 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Subscribe to {{ gym?.name }}</h2>
+      <button class="close-btn" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="gym-info">
+        <h3>{{ gym?.name }}</h3>
+        <p class="address">{{ gym?.address }}</p>
+        <p class="description">{{ gym?.description }}</p>
+      </div>
+      
+      <div class="plan-selection">
+        <h4>Choose your subscription plan:</h4>
+        <div class="plans-grid">
+          <div 
+            class="plan-card" 
+            *ngFor="let plan of plans"
+            [class.selected]="selectedPlan?.name === plan.name"
+            (click)="selectPlan(plan)">
+            <div class="plan-header">
+              <h3>{{ plan.displayName }}</h3>
+              <div class="price">
+                <span class="currency">$</span>
+                <span class="amount">{{ plan.price }}</span>
+                <span class="period">{{ plan.interval === 'month' ? '/mo' : '/year' }}</span>
+              </div>
+            </div>
+            <div class="plan-features">
+              <ul>
+                <li>
+                  <span class="material-icons">check</span>
+                  Full gym access
+                </li>
+                <li>
+                  <span class="material-icons">check</span>
+                  All equipment included
+                </li>
+                <li>
+                  <span class="material-icons">check</span>
+                  Locker room access
+                </li>
+                <li *ngIf="plan.name === 'ANNUAL'">
+                  <span class="material-icons">check</span>
+                  Save 16% annually
+                </li>
+              </ul>
+            </div>
+            <div class="plan-badge" *ngIf="plan.name === 'ANNUAL'">
+              Best Value
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Photo Capture Step -->
+    <div *ngIf="showPhotoCapture" class="photo-capture-step">
+      <h3>📸 Photo Required for Facial Recognition</h3>
+      <p>Please provide a clear photo of your face for secure gym access. This is mandatory for your subscription.</p>
+      
+      <!-- Camera Preview -->
+      <div *ngIf="showCameraPreview" class="camera-preview">
+        <video 
+          #cameraVideo 
+          autoplay 
+          playsinline 
+          muted
+          class="camera-video">
+        </video>
+        <div class="camera-overlay">
+          <div class="face-guide"></div>
+        </div>
+        <div class="camera-controls">
+          <button 
+            class="btn btn-primary capture-btn"
+            (click)="capturePhoto()"
+            [disabled]="isCapturingPhoto">
+            <span *ngIf="!isCapturingPhoto">📷 Capture Photo</span>
+            <span *ngIf="isCapturingPhoto">Capturing...</span>
+          </button>
+          <button class="btn btn-secondary" (click)="stopCamera()">
+            Cancel
+          </button>
+        </div>
+      </div>
+      
+      <!-- Photo Options -->
+      <div *ngIf="!showCameraPreview" class="photo-options">
+        <button 
+          class="btn btn-primary"
+          (click)="startCameraPreview()">
+          📷 Open Camera
+        </button>
+        
+        <div class="file-upload">
+          <label for="photo-upload" class="btn btn-secondary">
+            📁 Upload Photo Instead
+          </label>
+          <input 
+            id="photo-upload" 
+            type="file" 
+            accept="image/*" 
+            (change)="onFileSelected($event)">
+        </div>
+      </div>
+      
+      <div *ngIf="photoError" class="error-message">
+        {{ photoError }}
+      </div>
+      
+      <div class="photo-instructions">
+        <h4>📋 Instructions:</h4>
+        <ul>
+          <li>Look directly at the camera</li>
+          <li>Ensure good lighting</li>
+          <li>Keep your face centered in the frame</li>
+          <li>Remove glasses if possible</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Photo Preview -->
+    <div *ngIf="capturedPhoto && !showPhotoCapture" class="photo-preview">
+      <h3>✅ Photo Captured Successfully</h3>
+      <img [src]="capturedPhoto" alt="Captured Photo" class="preview-image">
+      <button class="btn btn-outline" (click)="retakePhoto()">
+        📷 Retake Photo
+      </button>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="onClose()" [disabled]="isLoading">
+        Cancel
+      </button>
+      <button 
+        class="btn-primary" 
+        (click)="onSubscribe()" 
+        [disabled]="!selectedPlan || isLoading">
+        <span *ngIf="isLoading" class="loading-spinner"></span>
+        <span *ngIf="!isLoading">
+          {{ capturedPhoto ? 'Subscribe for $' + selectedPlan?.price + '/' + selectedPlan?.interval : 'Take Photo & Subscribe' }}
+        </span>
+        <span *ngIf="isLoading">Processing...</span>
+      </button>
+    </div>
+  </div>
+</div>

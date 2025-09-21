@@ -1,0 +1,235 @@
+<div class="signin-container">
+  <div class="signin-wrapper">
+    <!-- Logo and Branding -->
+    <div class="logo-section">
+      <img src="assets/safe-fitness-logo.svg" alt="Safe Fitness" class="logo">
+      <h1 class="brand-name">Safe Fitness</h1>
+      <p class="tagline">Welcome Back, Champion!</p>
+    </div>
+
+    <!-- Signin Form Card -->
+    <div class="signin-card">
+      <h2 class="signin-title">Sign In to Your Account</h2>
+      
+      <!-- Alert Messages -->
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        <span class="material-icons">error</span>
+        {{ errorMessage }}
+      </div>
+
+      <!-- Signin Form -->
+      <form [formGroup]="signinForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">
+            <span class="material-icons">email</span>
+            Email Address
+          </label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="Enter your email"
+            [class.error-input]="f['email'].touched && f['email'].errors">
+          <span *ngIf="f['email'].touched && f['email'].errors?.['required']" class="error">
+            Email is required
+          </span>
+          <span *ngIf="f['email'].touched && f['email'].errors?.['email']" class="error">
+            Please enter a valid email address
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">
+            <span class="material-icons">lock</span>
+            Password
+          </label>
+          <div class="password-input-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="Enter your password"
+              [class.error-input]="f['password'].touched && f['password'].errors">
+            <button 
+              type="button" 
+              class="password-toggle"
+              (click)="togglePasswordVisibility()">
+              <span class="material-icons">
+                {{ showPassword ? 'visibility_off' : 'visibility' }}
+              </span>
+            </button>
+          </div>
+          <span *ngIf="f['password'].touched && f['password'].errors?.['required']" class="error">
+            Password is required
+          </span>
+        </div>
+
+        <!-- Remember Me and Forgot Password -->
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="rememberMe">
+            <span>Remember me</span>
+          </label>
+          <button type="button" class="forgot-link" (click)="openForgotPasswordModal()">Forgot Password?</button>
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          class="btn btn-primary submit-btn"
+          [disabled]="isLoading">
+          <span *ngIf="!isLoading">
+            <span class="material-icons">login</span>
+            Sign In
+          </span>
+          <span *ngIf="isLoading" class="loading-spinner"></span>
+        </button>
+
+        <!-- Social Login Options -->
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+          <div class="social-login">
+            <button type="button" class="social-btn facial primary" (click)="openFacialLogin()">
+              <span class="material-icons">face</span>
+              Login with Face Recognition
+            </button>
+            <p class="facial-login-note">
+              <span class="material-icons">info</span>
+              Quick and secure access using your registered face
+            </p>
+        </div>
+      </form>
+
+      <!-- Links -->
+      <div class="form-links">
+        <p>Don't have an account? <a routerLink="/signup">Sign Up</a></p>
+        <p class="info-text">
+          <span class="material-icons">info</span>
+          After signup, your account needs SuperAdmin approval
+        </p>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features">
+      <div class="feature">
+        <span class="material-icons">fitness_center</span>
+        <span>Professional Training</span>
+      </div>
+      <div class="feature">
+        <span class="material-icons">people</span>
+        <span>Expert Coaches</span>
+      </div>
+      <div class="feature">
+        <span class="material-icons">schedule</span>
+        <span>Flexible Schedule</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <app-forgot-password-modal 
+    *ngIf="showForgotPasswordModal" 
+    (close)="closeForgotPasswordModal()">
+  </app-forgot-password-modal>
+
+  <!-- Facial Recognition Login Modal -->
+  <div *ngIf="showFacialLogin" class="facial-login-modal">
+    <div class="modal-overlay" (click)="closeFacialLogin()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>🔐 Face Recognition Login</h3>
+          <button class="close-btn" (click)="closeFacialLogin()">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <!-- Recognition Result -->
+          <div *ngIf="recognitionResult" class="recognition-result">
+            <div *ngIf="recognitionResult.recognized" class="success-result">
+              <i class="material-icons success-icon">check_circle</i>
+              <h4>Welcome back!</h4>
+              <p><strong>{{ recognitionResult.member?.firstname }} {{ recognitionResult.member?.lastname }}</strong></p>
+              <p>Similarity: {{ (recognitionResult.similarity_score! * 100).toFixed(1) }}%</p>
+              <p class="redirect-message">Redirecting to dashboard...</p>
+            </div>
+            
+            <div *ngIf="!recognitionResult.recognized" class="error-result">
+              <i class="material-icons error-icon">cancel</i>
+              <h4>Face Not Recognized</h4>
+              <p>{{ recognitionResult.message }}</p>
+            </div>
+          </div>
+
+          <!-- Camera Preview -->
+          <div *ngIf="!recognitionResult && showCameraPreview" class="camera-preview-container">
+            <div class="camera-wrapper">
+              <video #facialVideoElement autoplay muted playsinline class="camera-preview"></video>
+              <div class="camera-overlay">
+                <div class="face-guide">
+                  <div class="face-guide-circle">
+                    <div class="face-guide-inner"></div>
+                  </div>
+                </div>
+                <div class="capture-instructions">
+                  <p>Position your face within the frame</p>
+                  <p>Ensure good lighting and clear visibility</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="camera-controls">
+              <button 
+                class="btn btn-capture"
+                (click)="captureFromPreview()"
+                [disabled]="isRecognizing">
+                <span class="material-icons">camera_alt</span>
+                {{ isRecognizing ? 'Recognizing...' : 'Capture & Recognize' }}
+              </button>
+              
+              <button 
+                class="btn btn-secondary"
+                (click)="stopCameraPreview()">
+                <span class="material-icons">close</span>
+                Cancel
+              </button>
+            </div>
+          </div>
+
+
+          <!-- Photo Capture Options -->
+          <div *ngIf="!recognitionResult && !showCameraPreview" class="photo-options">
+            <button 
+              class="btn btn-primary"
+              (click)="startCameraPreview()"
+              [disabled]="isRecognizing">
+              <span class="material-icons">camera_alt</span>
+              Open Camera for Recognition
+            </button>
+            
+            <div class="file-upload">
+              <label for="facial-upload" class="btn btn-secondary">
+                <span class="material-icons">upload</span>
+                Upload Photo
+              </label>
+              <input 
+                id="facial-upload" 
+                type="file" 
+                accept="image/*" 
+                (change)="uploadAndRecognize($event)"
+                [disabled]="isRecognizing">
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn btn-outline" (click)="closeFacialLogin()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

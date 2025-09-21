@@ -1,0 +1,127 @@
+<div class="member-registration-container">
+  <div class="header">
+    <h2>Member Registration</h2>
+    <p>Register for facial recognition access</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="success-message">
+    <i class="fas fa-check-circle"></i>
+    {{ successMessage }}
+  </div>
+
+  <form (ngSubmit)="registerMember()" #registrationForm="ngForm">
+    <div class="form-section">
+      <h3>Personal Information</h3>
+      
+      <div class="form-group">
+        <label for="firstname">First Name *</label>
+        <input 
+          type="text" 
+          id="firstname" 
+          name="firstname"
+          [(ngModel)]="memberData.firstname"
+          required
+          placeholder="Enter your first name">
+      </div>
+
+      <div class="form-group">
+        <label for="lastname">Last Name *</label>
+        <input 
+          type="text" 
+          id="lastname" 
+          name="lastname"
+          [(ngModel)]="memberData.lastname"
+          required
+          placeholder="Enter your last name">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          [(ngModel)]="memberData.email"
+          required
+          placeholder="Enter your email address">
+      </div>
+
+      <div class="form-group">
+        <label for="gym_id">Gym ID</label>
+        <input 
+          type="number" 
+          id="gym_id" 
+          name="gym_id"
+          [(ngModel)]="memberData.gym_id"
+          placeholder="Enter gym ID">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Photo Capture</h3>
+      <p class="section-description">Please provide a clear photo of your face for facial recognition</p>
+
+      <!-- Photo Preview -->
+      <div *ngIf="capturedImage || selectedFile" class="photo-preview">
+        <img [src]="capturedImage || (selectedFile ? getFilePreview() : '')" alt="Captured Photo">
+        <button type="button" class="btn btn-danger btn-sm" (click)="clearPhoto()">
+          <i class="fas fa-times"></i>
+          Remove Photo
+        </button>
+      </div>
+
+      <!-- Photo Capture Options -->
+      <div class="photo-capture-options">
+        <button 
+          type="button" 
+          class="btn btn-primary"
+          (click)="captureFromCamera()"
+          [disabled]="isCapturing || isUploading">
+          <i class="fas fa-camera" *ngIf="!isCapturing"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="isCapturing"></i>
+          {{ isCapturing ? 'Capturing...' : 'Capture from Camera' }}
+        </button>
+
+        <div class="file-upload-container">
+          <label for="photo-upload" class="btn btn-secondary">
+            <i class="fas fa-upload"></i>
+            Upload Photo
+          </label>
+          <input 
+            id="photo-upload" 
+            type="file" 
+            accept="image/*" 
+            (change)="onFileSelected($event)"
+            [disabled]="isUploading">
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button 
+        type="submit" 
+        class="btn btn-success btn-large"
+        [disabled]="!registrationForm.form.valid || !memberData.image || isUploading">
+        <i class="fas fa-user-plus" *ngIf="!isUploading"></i>
+        <i class="fas fa-spinner fa-spin" *ngIf="isUploading"></i>
+        {{ isUploading ? 'Registering...' : 'Register Member' }}
+      </button>
+
+      <button 
+        type="button" 
+        class="btn btn-outline"
+        (click)="goToFacialRecognition()">
+        <i class="fas fa-sign-in-alt"></i>
+        Already Registered? Login
+      </button>
+    </div>
+  </form>
+</div>

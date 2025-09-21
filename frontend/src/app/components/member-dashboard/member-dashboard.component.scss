@@ -1,0 +1,217 @@
+.view-wrapper{max-width:1200px;margin:20px auto;padding:0 20px;min-height:100vh;position:relative;z-index:0;background:#f3f4f6}
+.page-container{background:transparent;width:100%;margin:0 auto;padding:0;border-radius:0;box-shadow:none}
+.header{display:flex;align-items:center;justify-content:space-between;margin:16px 0 20px 0}
+.title{display:flex;align-items:center;gap:10px}
+
+
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg,#ef4444,#dc2626);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 8px 16px rgba(239,68,68,.25);
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(239,68,68,.35);
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.welcome-section h2 {
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.welcome-section p {
+  color: #6b7280;
+}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:20px;margin-top:18px}
+.gym-card{position:relative;background:#fff;border-radius:16px;box-shadow:0 12px 28px rgba(0,0,0,.08);padding:18px;border:1px solid #eef1ff;transition:transform .2s ease, box-shadow .2s ease}
+.gym-card::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;border-top-left-radius:16px;border-top-right-radius:16px;background:linear-gradient(90deg,#667eea 0%,#764ba2 100%)}
+.gym-card:hover{transform:translateY(-4px);box-shadow:0 22px 44px rgba(102,126,234,.2)}
+.gym-card-header h3{margin:0 0 6px 0;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.gym-card-header .code{font-size:.9rem;color:#6b7280}
+.gym-card-header .sub{color:#6b7280;margin-bottom:10px}
+.mini-map{height:240px;border-radius:14px;border:1px solid #e5e7eb;margin-top:10px;box-shadow:0 6px 16px rgba(0,0,0,.08);background:#f3f4f6}
+.grid-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:10px}
+.grid-photos img{width:100%;height:140px;object-fit:cover;border-radius:12px;border:1px solid #e5e5e5}
+
+.rating-section {
+  margin: 12px 0;
+  padding: 10px;
+  background: #f8f9ff;
+  border-radius: 10px;
+  border: 1px solid #e0e6ff;
+}
+
+.rate-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.rate-section label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.browse-gyms-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25);
+  font-size: 14px;
+}
+
+.browse-gyms-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.35);
+}
+
+.cancel-subscription-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 8px 16px rgba(245, 158, 11, 0.25);
+  font-size: 14px;
+}
+
+.cancel-subscription-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(245, 158, 11, 0.35);
+  background: linear-gradient(135deg, #d97706, #b45309);
+}
+
+/* Subscription Section */
+.subscription-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.subscription-status {
+  width: 100%;
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  
+  &.subscribed {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    
+    .material-icons {
+      font-size: 16px;
+    }
+  }
+}
+
+.subscribe-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: 100%;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  
+  &:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+  }
+  
+  .material-icons {
+    font-size: 18px;
+  }
+}
+
+.schedule-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.25);
+  
+  &:hover {
+    background: linear-gradient(135deg, #38a169, #2f855a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+  }
+  
+  .material-icons {
+    font-size: 16px;
+  }
+}

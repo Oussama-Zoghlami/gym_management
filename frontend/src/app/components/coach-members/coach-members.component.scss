@@ -1,0 +1,357 @@
+.coach-members-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f7fafc;
+  min-height: 100vh;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .header-content {
+    text-align: left;
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2rem;
+      color: #2d3748;
+      margin-bottom: 0.5rem;
+
+      .material-icons {
+        font-size: 2rem;
+        color: #667eea;
+      }
+    }
+
+    .section-description {
+      color: #718096;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: white;
+    color: #667eea;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .material-icons {
+      font-size: 20px;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  .loading-spinner {
+    .material-icons {
+      font-size: 3rem;
+      color: #667eea;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  p {
+    margin-top: 1rem;
+    color: #718096;
+    font-size: 1.1rem;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+
+  .error-message {
+    background: #fed7d7;
+    border: 1px solid #feb2b2;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    max-width: 400px;
+
+    .material-icons {
+      font-size: 2rem;
+      color: #e53e3e;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: #c53030;
+      margin: 0.5rem 0 1rem 0;
+    }
+
+    .retry-btn {
+      background: #e53e3e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 auto;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background: #c53030;
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+
+  .empty-icon {
+    .material-icons {
+      font-size: 4rem;
+      color: #a0aec0;
+      margin-bottom: 1rem;
+    }
+  }
+
+  h3 {
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: #718096;
+    font-size: 1.1rem;
+  }
+}
+
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.member-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.member-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.member-avatar {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .material-icons {
+    color: white;
+    font-size: 1.5rem;
+  }
+}
+
+.member-info {
+  flex: 1;
+
+  .member-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .member-email {
+    color: #718096;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+.gym-badge {
+  background: #667eea;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.badge-primary { background: #667eea; }
+  &.badge-secondary { background: #764ba2; }
+  &.badge-success { background: #48bb78; }
+  &.badge-warning { background: #ed8936; }
+  &.badge-info { background: #4299e1; }
+}
+
+.member-details {
+  margin-bottom: 1rem;
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+    font-size: 0.9rem;
+
+    .material-icons {
+      font-size: 1rem;
+      color: #718096;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.member-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+
+  .action-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    .material-icons {
+      font-size: 1.2rem;
+    }
+
+    &.contact-btn {
+      background: #e6fffa;
+      color: #319795;
+
+      &:hover {
+        background: #b2f5ea;
+      }
+    }
+
+    &.view-btn {
+      background: #ebf8ff;
+      color: #3182ce;
+
+      &:hover {
+        background: #bee3f8;
+      }
+    }
+  }
+}
+
+.stats-summary {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+
+  .stat-item {
+    text-align: center;
+
+    .stat-number {
+      display: block;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .coach-members-container {
+    padding: 1rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+
+    .header-content {
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .members-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-summary {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

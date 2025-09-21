@@ -1,0 +1,188 @@
+<div class="messaging-container">
+  <!-- Sidebar with conversation partners -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>
+        <span class="material-icons">message</span>
+        Conversations
+        <span class="unread-badge" *ngIf="getTotalUnreadCount() > 0">{{getTotalUnreadCount()}}</span>
+      </h3>
+    </div>
+    
+    <div class="partners-list">
+      <!-- Existing Conversations -->
+      <div class="section-header" *ngIf="conversationPartners.length > 0">
+        <span class="material-icons">chat_bubble</span>
+        Recent Conversations
+      </div>
+      <div class="partner-item conversation-partner" 
+           *ngFor="let partner of conversationPartners"
+           [class.active]="selectedPartnerId === partner.id"
+           (click)="selectPartner(partner)">
+        <div class="partner-info">
+          <span class="material-icons">person</span>
+          <span class="partner-name">
+            {{partner.firstname}} {{partner.lastname}}
+            <span class="unread-count-badge" 
+                  *ngIf="getUnreadCountForUser(partner.id) > 0"
+                  [title]="'Unread messages from ' + getUnreadSenderName(partner.id)">
+              {{getUnreadCountForUser(partner.id)}}
+            </span>
+          </span>
+          <span class="partner-role">{{partner.role}}</span>
+        </div>
+        <div class="conversation-indicator">
+          <span class="material-icons">chat</span>
+        </div>
+      </div>
+
+      <!-- All Gym Users -->
+      <div class="section-header">
+        <span class="material-icons">people</span>
+        <span *ngIf="isCoach">All Gym Members & Staff</span>
+        <span *ngIf="!isCoach">Gym Coaches & Staff</span>
+      </div>
+      <div class="partner-item gym-user" 
+           *ngFor="let user of gymUsers"
+           [class.active]="selectedPartnerId === user.id"
+           (click)="selectPartner(user)">
+        <div class="partner-info">
+          <span class="material-icons">person</span>
+          <span class="partner-name">
+            {{user.firstname}} {{user.lastname}}
+            <span class="unread-count-badge" 
+                  *ngIf="getUnreadCountForUser(user.id) > 0"
+                  [title]="'Unread messages from ' + getUnreadSenderName(user.id)">
+              {{getUnreadCountForUser(user.id)}}
+            </span>
+          </span>
+          <span class="partner-role">{{user.role}}</span>
+        </div>
+        <div class="new-chat-indicator" *ngIf="!hasConversation(user.id)">
+          <span class="material-icons">chat_bubble_outline</span>
+        </div>
+        <div class="conversation-indicator" *ngIf="hasConversation(user.id)">
+          <span class="material-icons">chat</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main chat area -->
+  <div class="chat-area">
+    <div class="chat-header">
+      <h3 *ngIf="selectedPartnerId">
+        <span class="material-icons">chat</span>
+        Chat with {{selectedPartnerName}}
+        <span class="connection-status" [class.connected]="webSocketService.isConnected()" [class.disconnected]="!webSocketService.isConnected()">
+          <span class="material-icons">{{webSocketService.isConnected() ? 'wifi' : 'wifi_off'}}</span>
+          {{webSocketService.isConnected() ? 'Real-time' : 'Polling'}}
+        </span>
+      </h3>
+      <div class="header-actions" *ngIf="selectedPartnerId">
+        <button class="delete-btn" (click)="deleteConversation()" title="Delete Conversation">
+          <span class="material-icons">delete</span>
+        </button>
+      </div>
+      <h3 *ngIf="!selectedPartnerId">
+        <span class="material-icons">forum</span>
+        Select a person to start chatting
+      </h3>
+    </div>
+
+    <div class="messages-container" *ngIf="!isLoading">
+      <div class="message" 
+           *ngFor="let message of messages"
+           [class.my-message]="isMyMessage(message)"
+           [class.other-message]="!isMyMessage(message)"
+           [class.meeting-message]="isMeetingMessage(message.content)">
+        
+        <div class="message-content">
+          <div class="message-header">
+            <span class="sender-name">{{getDisplaySenderName(message)}}</span>
+            <span class="timestamp">{{formatTimestamp(message.timestamp)}}</span>
+            <span class="read-status material-icons" *ngIf="isMyMessage(message)" 
+                  [title]="message.isRead ? 'Read' : 'Unread'">
+              {{message.isRead ? 'done_all' : 'done'}}
+            </span>
+          </div>
+          
+          <!-- Regular message content -->
+          <div class="message-text" *ngIf="!isMeetingMessage(message.content)">
+            {{message.content}}
+          </div>
+          
+          <!-- Meeting message content -->
+          <div class="meeting-content" *ngIf="isMeetingMessage(message.content)">
+            <div class="meeting-header">
+              <span class="material-icons">videocam</span>
+              <span class="meeting-title">Google Meet Invitation</span>
+              <span class="meeting-badge">LIVE</span>
+            </div>
+            <div class="meeting-details">
+              <div class="meeting-text">{{message.content}}</div>
+              <div class="meeting-actions">
+                <button class="join-meeting-btn primary" 
+                        (click)="joinMeeting(message.content)"
+                        title="Join Google Meet">
+                  <span class="material-icons">video_call</span>
+                  Join Meeting
+                </button>
+                <button class="copy-link-btn secondary" 
+                        (click)="copyMeetingLink(message.content)"
+                        title="Copy Meeting Link">
+                  <span class="material-icons">content_copy</span>
+                  Copy Link
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-messages" *ngIf="messages.length === 0">
+        <span class="material-icons">chat_bubble_outline</span>
+        <p *ngIf="selectedPartnerId">No conversation yet with {{selectedPartnerName}}</p>
+        <p *ngIf="!selectedPartnerId">No messages in the gym yet</p>
+      </div>
+    </div>
+
+    <div class="loading" *ngIf="isLoading">
+      <span class="material-icons spinning">refresh</span>
+      Loading messages...
+    </div>
+
+    <!-- Message input area -->
+    <div class="message-input-area" *ngIf="selectedPartnerId">
+      <div class="input-container">
+        <textarea 
+          class="message-input"
+          [(ngModel)]="newMessage"
+          placeholder="Type your message..."
+          rows="2"
+          (keydown)="handleKeyDown($event)">
+        </textarea>
+        
+        <!-- Google Meet button for coaches -->
+        <button class="meet-button" 
+                *ngIf="isCoach"
+                (click)="createDirectMeeting()"
+                title="Create Google Meet">
+          <span class="material-icons">video_call</span>
+        </button>
+        
+        <button class="send-button" 
+                (click)="sendMessage()"
+                [disabled]="!newMessage.trim()">
+          <span class="material-icons">send</span>
+        </button>
+      </div>
+      <small class="input-hint">Press Enter to send, Shift+Enter for new line</small>
+    </div>
+
+    <div class="no-partner-selected" *ngIf="!selectedPartnerId">
+      <span class="material-icons">chat</span>
+      <p>Select a person from the sidebar to start private conversation</p>
+    </div>
+  </div>
+</div>

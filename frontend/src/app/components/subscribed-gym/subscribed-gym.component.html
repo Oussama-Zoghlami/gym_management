@@ -1,0 +1,167 @@
+<section class="view-wrapper">
+  <div class="page-container">
+    <header class="header">
+      <div class="title" style="display:flex;align-items:center;gap:10px">
+        <img src="/assets/safe-fitness-logo.svg" alt="Safe Fitness" style="width:28px;height:28px" />
+        <strong>Safe Fitness</strong>
+      </div>
+      <div class="header-actions">
+
+        <button class="nav-btn" (click)="toggleMessaging()">
+          <span class="material-icons">message</span>
+          Messages
+          <span class="message-badge" *ngIf="unreadCount > 0">{{unreadCount}}</span>
+        </button>
+        <button class="nav-btn" (click)="toggleWorkoutPlans()">
+          <span class="material-icons">fitness_center</span>
+          Workout Plans
+        </button>
+        <button class="nav-btn" (click)="toggleSubscriptionCalendar()">
+          <span class="material-icons">event</span>
+          Subscription Calendar
+        </button>
+        <button class="browse-gyms-btn" (click)="browseOtherGyms()">
+          <span class="material-icons">explore</span>
+          Browse Other Gyms
+        </button>
+        <button class="logout-btn" (click)="logout()">
+          <span class="material-icons">logout</span>
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="loading-section" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <h3>Loading your gym...</h3>
+    </div>
+
+    <!-- Messaging Section -->
+    <div class="messaging-section" *ngIf="showMessaging && !isLoading && subscription">
+      <div class="messaging-header">
+        <button class="back-btn" (click)="toggleMessaging()">
+          <span class="material-icons">arrow_back</span>
+          Back to Gym Details
+        </button>
+      </div>
+      <app-coach-messaging></app-coach-messaging>
+    </div>
+
+    <!-- Subscription Calendar Section -->
+    <div class="subscription-calendar-section" *ngIf="showSubscriptionCalendar && !isLoading && subscription">
+      <div class="calendar-header">
+        <button class="back-btn" (click)="toggleSubscriptionCalendar()">
+          <span class="material-icons">arrow_back</span>
+          Back to Gym Details
+        </button>
+      </div>
+      <app-subscription-calendar></app-subscription-calendar>
+    </div>
+
+    <!-- Workout Plans Section -->
+    <div class="workout-plans-section" *ngIf="showWorkoutPlans && !isLoading && subscription">
+      <div class="workout-plans-header">
+        <button class="back-btn" (click)="toggleWorkoutPlans()">
+          <span class="material-icons">arrow_back</span>
+          Back to Gym Details
+        </button>
+      </div>
+      <app-member-workout-plans></app-member-workout-plans>
+    </div>
+
+    <!-- Nutrition Tracker Section -->
+    <div class="nutrition-section" *ngIf="!isLoading && subscription && !showMessaging && !showWorkoutPlans">
+      <app-nutrition-tracker></app-nutrition-tracker>
+    </div>
+
+    <div class="subscribed-gym-section" *ngIf="!isLoading && subscription && !showMessaging && !showWorkoutPlans">
+      <div class="welcome-message">
+        <h2>Welcome to {{ subscription.gym?.name }}!</h2>
+        <p>You have an active {{ subscription.plan?.displayName?.toLowerCase() }} subscription</p>
+      </div>
+
+      <div class="gym-details">
+        <div class="gym-card">
+          <div class="gym-header">
+            <h3>{{ subscription.gym?.name }}</h3>
+            <span class="subscription-badge">
+              <span class="material-icons">check_circle</span>
+              {{ subscription.plan?.displayName }} Member
+            </span>
+          </div>
+
+          <div class="gym-info">
+            <div class="info-row" *ngIf="subscription.gym?.address">
+              <span class="material-icons">location_on</span>
+              <span>{{ subscription.gym?.address }}</span>
+            </div>
+            <div class="info-row" *ngIf="subscription.gym?.phone">
+              <span class="material-icons">phone</span>
+              <span>{{ subscription.gym?.phone }}</span>
+            </div>
+            <div class="info-row" *ngIf="subscription.gym?.email">
+              <span class="material-icons">email</span>
+              <span>{{ subscription.gym?.email }}</span>
+            </div>
+          </div>
+
+          <div class="gym-photos" *ngIf="subscription.gym?.photos?.length">
+            <h4>Gym Gallery</h4>
+            <div class="photos-grid">
+              <img 
+                *ngFor="let photo of subscription.gym.photos" 
+                [src]="photoUrl(photo?.url)"
+                [alt]="subscription.gym?.name"
+                class="gym-photo">
+            </div>
+          </div>
+
+          <div class="subscription-details">
+            <h4>Subscription Details</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label>Plan:</label>
+                <span>{{ subscription.plan?.displayName }}</span>
+              </div>
+              <div class="detail-item">
+                <label>Status:</label>
+                <span class="status active">{{ subscription.status }}</span>
+              </div>
+              <div class="detail-item">
+                <label>Started:</label>
+                <span>{{ subscription.startDate | date }}</span>
+              </div>
+              <div class="detail-item" *ngIf="subscription.endDate">
+                <label>Expires:</label>
+                <span>{{ subscription.endDate | date }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="gym-actions">
+            <button class="btn-primary" (click)="viewSchedule()">
+              <span class="material-icons">schedule</span>
+              View Schedule
+            </button>
+            <button class="cancel-subscription-btn" (click)="cancelSubscription()">
+              <span class="material-icons">cancel</span>
+              Cancel Subscription
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-subscription" *ngIf="!isLoading && !subscription">
+      <div class="empty-state">
+        <span class="material-icons">gym</span>
+        <h3>No Active Subscription</h3>
+        <p>You don't have an active gym subscription.</p>
+        <button class="btn-primary" (click)="browseOtherGyms()">
+          <span class="material-icons">explore</span>
+          Browse Gyms
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
